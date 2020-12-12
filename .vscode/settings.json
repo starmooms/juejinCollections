@@ -1,0 +1,42 @@
+{
+  // "editor.wordWrap": "on",
+  "go.useLanguageServer": true,
+  // "editor.minimap.renderCharacters": false,
+  // "editor.minimap.enabled": false,
+  "terminal.external.osxExec": "iTerm.app",
+  "go.docsTool": "gogetdoc",
+  "go.lintTool": "golint",
+  "go.testFlags": ["-v", "-count=1"],
+  "go.buildTags": "",
+  "go.buildFlags": [],
+  "go.lintFlags": ["--disable=all"],
+  "go.vetFlags": [],
+  "go.coverOnSave": false,
+  "go.useCodeSnippetsOnFunctionSuggest": true,
+  "go.formatTool": "gofmt",
+  "go.formatOnSave": true,
+  "go.gocodeAutoBuild": false,
+  "go.goroot": "D:/coffee_gxm/go/go1.14.1",
+  "go.gopath": "F:/work/Go",
+  "go.autocompleteUnimportedPackages": true,
+  "go.formatFlags": [],
+  "go.inferGopath": false,
+  "[go]": {
+    "editor.snippetSuggestions": "none",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": false,
+      "source.fixAll": false
+    }
+  },
+  "editor.links": false,
+  // "go."
+  "gopls": {
+    // add parameter placeholders when completing a function
+    "usePlaceholders": true,
+    "staticcheck": false
+    // Experimental settings
+    // "completeUnimported": true, // autocomplete unimported packages
+    // "deepCompletion": true, // enable deep completion
+  }
+}

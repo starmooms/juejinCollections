@@ -1,0 +1,4 @@
+./fortend/node_modules
+./fortend/dist
+
+vendor
