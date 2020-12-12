@@ -1,0 +1,13 @@
+{
+  "allowJs": true,
+  "include": ["./src/**/*", "src/types/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es5",
+    "sourceMap": true,
+    "allowJs": true,
+    "outDir": "./dist"
+  }
+}
