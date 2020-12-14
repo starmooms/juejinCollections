@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"juejinCollections/httpRequest"
 	"net/http"
 	"path/filepath"
 
@@ -43,6 +44,40 @@ func main() {
 			},
 		})
 	})
+
+	// https://api.juejin.cn/interact_api/v1/collectionSet/list
+	// 1116759544852221
+	// 2664871913078168
+	httpReq := httpRequest.Request(&httpRequest.HttpRequest{
+		Url:    "http://www-test.yingsheng.com/webhome/api/operate",
+		Method: "GET",
+		Params: &gin.H{
+			"user_id": 1116759544852221,
+			"cursor":  0,
+			"limit":   20,
+		},
+	})
+	data, err := httpReq.DoRequest()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(data)
+
+	httpReq2 := httpRequest.Request(&httpRequest.HttpRequest{
+		Url:    "http://www-test.yingsheng.com/webhome/api/operate",
+		Method: "POST",
+	})
+	data2, err2 := httpReq2.DoRequest()
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	fmt.Println(data2)
+
+	// httpRequest.Get("http://www-test.yingsheng.com/webhome/api/operate", &gin.H{
+	// 	"user_id": 1116759544852221,
+	// 	"cursor":  0,
+	// 	"limit":   20,
+	// })
 
 	// r.GET("/*url", func(c *gin.Context) {
 	// 	// c.JSON(200, gin.H{

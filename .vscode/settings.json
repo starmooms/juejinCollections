@@ -16,8 +16,6 @@
   "go.formatTool": "gofmt",
   "go.formatOnSave": true,
   "go.gocodeAutoBuild": false,
-  "go.goroot": "D:/coffee_gxm/go/go1.14.1",
-  "go.gopath": "F:/work/Go",
   "go.autocompleteUnimportedPackages": true,
   "go.formatFlags": [],
   "go.inferGopath": false,
