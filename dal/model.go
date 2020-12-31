@@ -1,8 +1,8 @@
-package collectReq
+package dal
 
-type Collect struct {
-	Id                 int    `json:"id"`
-	Tag_id             string `json:"tag_id"`
+type collect struct {
+	Id                 int    `json:"id" xorm:"id pk notnull unique"`
+	Tag_id             string `json:"tag_id" xorm:"tag pk notnull unique"`
 	Tag_name           string `json:"tag_name"`
 	Color              string `json:"color"`
 	Icon               string `json:"icon"`
@@ -16,13 +16,4 @@ type Collect struct {
 	Concern_user_count int    `json:"concern_user_count"`
 	Isfollowed         bool   `json:"isfollowed"`
 	Is_has_in          bool   `json:"is_has_in"`
-}
-
-type CollectListStruct struct {
-	Err_no   int       `json:"err_no"`
-	Err_msg  string    `json:"err_msg"`
-	Data     []Collect `json:"data"`
-	Cursor   string    `json:"cursor"`
-	Count    int       `json:"count"`
-	Has_more bool      `json:"has_more"`
 }
