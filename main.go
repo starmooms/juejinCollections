@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+
+	_ "juejinCollections/dal"
 )
 
 func main() {

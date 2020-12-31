@@ -1,4 +1,6 @@
-./fortend/node_modules
-./fortend/dist
+/frontend/node_modules
+/frontend/dist
+/frontend/*-error.log
 
-vendor
+/vendor
+*.db

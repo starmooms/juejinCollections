@@ -1,7 +1,10 @@
-import { BuildConfig } from 'vite'
-export default {
+import { UserConfig } from 'vite'
+
+const config: UserConfig = {
   base: "/",
   proxy: {
     '/api': "http://localhost:8012"
   }
-} as Partial<BuildConfig>
+}
+
+export default config
