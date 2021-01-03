@@ -1,5 +1,7 @@
 package collectReq
 
+import "juejinCollections/dal"
+
 type Collect struct {
 	Id                 int    `json:"id"`
 	Tag_id             string `json:"tag_id"`
@@ -19,10 +21,10 @@ type Collect struct {
 }
 
 type CollectListStruct struct {
-	Err_no   int       `json:"err_no"`
-	Err_msg  string    `json:"err_msg"`
-	Data     []Collect `json:"data"`
-	Cursor   string    `json:"cursor"`
-	Count    int       `json:"count"`
-	Has_more bool      `json:"has_more"`
+	Err_no   int            `json:"err_no"`
+	Err_msg  string         `json:"err_msg"`
+	Data     []dal.TagModel `json:"data"`
+	Cursor   string         `json:"cursor"`
+	Count    int            `json:"count"`
+	Has_more bool           `json:"has_more"`
 }
