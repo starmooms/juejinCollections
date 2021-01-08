@@ -6,7 +6,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceRoot}/main.go",
+      "program": "${workspaceRoot}",
       "args": []
       //"showLog": true
     }

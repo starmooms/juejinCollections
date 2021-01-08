@@ -41,7 +41,7 @@ func GetList() error {
 	reqCollectList := &CollectListStruct{}
 	json.Unmarshal(b, reqCollectList)
 
-	if _, err := dal.AddTags(reqCollectList.Data); err != nil {
+	if _, err := dal.AddTags(&reqCollectList.Data); err != nil {
 		setError(err)
 		return err
 	}
