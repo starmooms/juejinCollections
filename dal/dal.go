@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"juejinCollections/model"
 	"juejinCollections/tool"
 	"reflect"
 	"strings"
@@ -76,6 +77,7 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 		whereSqlList = append(whereSqlList, fmt.Sprintf("excluded.%[1]s=%[2]s.%[1]s", v, tabelName))
 	}
 	whereKeySql := strings.Join(whereSqlList, ",")
+	whereKeySql += " and excluded.mTime is NULL"
 
 	// 冲突键
 	conflictKeySql := strings.Join(mainKey, ",")
@@ -89,11 +91,20 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 }
 
 // 添加收藏列表
-func AddTags(list *[]TagModel) (sql.Result, error) {
-	model := &TagModel{}
-	tabelName := model.TableName()
+func AddTags(list *[]model.TagModel) (sql.Result, error) {
+	tagModel := &model.TagModel{}
+	tabelName := tagModel.TableName()
 	mainKey := []string{"id"}
 	updateKey := []string{"tag_id", "tag_name", "color", "icon", "back_ground", "ctime", "mtime", "status", "creator_id", "user_name", "post_article_count", "concern_user_count", "isfollowed", "is_has_in", "update_time"}
 	otherKey := []string{"create_time"}
+	// s := "\"计算机基础'\""
+	// // s = "\"webpack\" or tag_name=\"监控\""
+
+	// users := []model.TagModel{}
+	// err2 := DbDal.Engine.Where("tag_name= ?", s).Find(&users)
+	// r, err3 := DbDal.Engine.Exec(fmt.Sprintf("SELECT `id`, `tag_id`, `tag_name`, `color`, `icon`, `back_ground`, `ctime`, `mtime`, `status`, `creator_id`, `user_name`, `post_article_count`, `concern_user_count`, `isfollowed`, `is_has_in`, `create_time`, `update_time` FROM `tags` WHERE (tag_name= %s )", s))
+	// fmt.Println("err2", err2, &users)
+	// fmt.Println("err3", err3, r)
+
 	return insertOrUpdate(tabelName, mainKey, updateKey, otherKey, list)
 }

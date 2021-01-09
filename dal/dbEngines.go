@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"juejinCollections/model"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -70,7 +71,7 @@ func (d *Dal) Init() error {
 	// 	`)
 	// }
 
-	if err := engine.Sync2(new(TagModel)); err != nil {
+	if err := engine.Sync2(new(model.TagModel)); err != nil {
 		fmt.Println(err)
 		return err
 	}

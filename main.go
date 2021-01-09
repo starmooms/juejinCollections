@@ -76,7 +76,7 @@ func main() {
 	// }
 	// fmt.Println(data2)
 
-	collectReq.GetList()
+	collectReq.GetTagList()
 
 	// httpRequest.Get("http://www-test.yingsheng.com/webhome/api/operate", &gin.H{
 	// 	"user_id": 1116759544852221,
