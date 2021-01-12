@@ -8,6 +8,7 @@ import (
 	"juejinCollections/tool"
 	"reflect"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -33,8 +34,8 @@ func getFileName(keys []string) []string {
 	return fileKey
 }
 
-func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, valList interface{}) (sql.Result, error) {
 
+func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, valList interface{}) (sql.Result, error) {
 	sliceValue := reflect.Indirect(reflect.ValueOf(valList))
 	if sliceValue.Kind() != reflect.Slice {
 		return nil, errors.New("valList needs a slice")
@@ -51,6 +52,7 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 	insertKeySql := strings.Join(insertKey, ",")
 
 	// 插入的values
+	var args []interface{}
 	valStrArr := []string{}
 	fileKey := getFileName(insertKey)
 	for i := 0; i < sliceLen; i++ {
@@ -58,7 +60,8 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 		var valArr = []string{}
 		for _, keyItem := range fileKey {
 			fieldValue := fieldItem.FieldByName(keyItem)
-			valArr = append(valArr, tool.ValueToDbString(fieldValue.Interface()))
+			args = append(args, tool.ValueToDbInterface(fieldValue.Interface()))
+			valArr = append(valArr, "?")
 		}
 		valStrArr = append(valStrArr, "("+strings.Join(valArr, ",")+")")
 	}
@@ -77,7 +80,6 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 		whereSqlList = append(whereSqlList, fmt.Sprintf("excluded.%[1]s=%[2]s.%[1]s", v, tabelName))
 	}
 	whereKeySql := strings.Join(whereSqlList, ",")
-	whereKeySql += " and excluded.mTime is NULL"
 
 	// 冲突键
 	conflictKeySql := strings.Join(mainKey, ",")
@@ -87,7 +89,33 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 		tabelName, insertKeySql, valStr, conflictKeySql, updateSql, whereKeySql,
 	)
 
-	return DbDal.Engine.Exec(sql)
+	var sqlArgs = []interface{}{sql}
+	sqlArgs = append(sqlArgs, args...)
+	return DbDal.Engine.Exec(sqlArgs...)
+}
+
+/** 将结构体中特定时间字段 设置为当前时间 */
+func setTimeFile(fileKey []string, list interface{}) error {
+	sliceValue := reflect.Indirect(reflect.ValueOf(list).Elem())
+	if sliceValue.Kind() != reflect.Slice {
+		return errors.New("list needs a slice")
+	}
+
+	sliceLen := sliceValue.Len()
+	if sliceLen == 0 {
+		return nil
+	}
+
+	now := time.Now()
+	nowRv := reflect.ValueOf(now)
+	for i := 0; i < sliceLen; i++ {
+		itemVal := sliceValue.Index(i)
+		for _, key := range fileKey {
+			fileItem := itemVal.FieldByName(key)
+			fileItem.Set(nowRv)
+		}
+	}
+	return nil
 }
 
 // 添加收藏列表
@@ -97,14 +125,6 @@ func AddTags(list *[]model.TagModel) (sql.Result, error) {
 	mainKey := []string{"id"}
 	updateKey := []string{"tag_id", "tag_name", "color", "icon", "back_ground", "ctime", "mtime", "status", "creator_id", "user_name", "post_article_count", "concern_user_count", "isfollowed", "is_has_in", "update_time"}
 	otherKey := []string{"create_time"}
-	// s := "\"计算机基础'\""
-	// // s = "\"webpack\" or tag_name=\"监控\""
-
-	// users := []model.TagModel{}
-	// err2 := DbDal.Engine.Where("tag_name= ?", s).Find(&users)
-	// r, err3 := DbDal.Engine.Exec(fmt.Sprintf("SELECT `id`, `tag_id`, `tag_name`, `color`, `icon`, `back_ground`, `ctime`, `mtime`, `status`, `creator_id`, `user_name`, `post_article_count`, `concern_user_count`, `isfollowed`, `is_has_in`, `create_time`, `update_time` FROM `tags` WHERE (tag_name= %s )", s))
-	// fmt.Println("err2", err2, &users)
-	// fmt.Println("err3", err3, r)
-
+	setTimeFile([]string{"CreateTime", "UpdateTime"}, list)
 	return insertOrUpdate(tabelName, mainKey, updateKey, otherKey, list)
 }

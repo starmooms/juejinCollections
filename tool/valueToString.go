@@ -74,3 +74,19 @@ func ValueToDbString(val interface{}) string {
 		return str
 	}
 }
+
+// 转换为sql要写入的interface参数
+func ValueToDbInterface(val interface{}) interface{} {
+	switch s := val.(type) {
+	case string:
+		if s == "" {
+			return nil
+		}
+	case time.Time:
+		if s.IsZero() {
+			return nil
+		}
+		return s.Format("2006-01-02 15:04:05")
+	}
+	return val
+}
