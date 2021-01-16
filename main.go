@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"juejinCollections/collectReq"
+	"juejinCollections/middleware"
+
 	// "juejinCollections/httpRequest"
 	"net/http"
-	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 
@@ -13,15 +14,18 @@ import (
 )
 
 func main() {
-	r := gin.Default()
+	// r := gin.Default()
+	r := gin.New()
+	r.Use(middleware.Logger(), middleware.Recovery())
+
+	// r.Use(gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
+	// 	if err, ok := recovered.(string); ok {
+	// 		c.String(http.StatusInternalServerError, fmt.Sprintf("error: %s", err))
+	// 	}
+	// 	c.AbortWithStatus(http.StatusInternalServerError)
+	// }))
+
 	r.LoadHTMLGlob("frontend/dist/*.html")
-
-	p, _ := filepath.Abs("./1.txt")
-	fmt.Println(p)
-
-	// distPath, _ := filepath.Abs("./frontend/dist")
-	// fmt.Println(distPath)
-
 	r.NoRoute(func(c *gin.Context) {
 		fmt.Println("end")
 		if c.Request.Method == "GET" {
@@ -39,13 +43,14 @@ func main() {
 	r.StaticFile("/favicon.ico", "frontend/dist/favicon.ico")
 
 	r.POST("/api/abc", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": true,
-			"data": gin.H{
-				"a": 1,
-				"b": 2,
-			},
-		})
+		panic("?")
+		// c.JSON(http.StatusOK, gin.H{
+		// 	"status": true,
+		// 	"data": gin.H{
+		// 		"a": 1,
+		// 		"b": 2,
+		// 	},
+		// })
 	})
 
 	// https://api.juejin.cn/interact_api/v1/collectionSet/list

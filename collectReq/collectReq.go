@@ -18,7 +18,7 @@ func init() {
 }
 
 func setError(err error) error {
-	wrapError := errors.New(err.Error())
+	wrapError := errors.NewWithDepth(1, err.Error())
 	fmt.Printf("%+v \n", wrapError)
 	return wrapError
 }
