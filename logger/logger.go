@@ -11,6 +11,15 @@ import (
 const isDebug = true
 
 var Logger *logrus.Logger
+var src *os.File
+
+func GetLog() *logrus.Logger {
+	return Logger
+}
+
+func GetFile() *os.File {
+	return src
+}
 
 func init() {
 	now := time.Now()
@@ -36,27 +45,26 @@ func init() {
 	// 	}
 	// }
 
-	src, err := os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModeAppend)
+	src, err = os.OpenFile(logFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
 
 	Logger = logrus.New()
-	formatConfig := &logrus.JSONFormatter{
+	formatConfig := &MyFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
+		enableColor:     false,
 	}
 	if isDebug {
 		Logger.SetOutput(os.Stdout)
 		Logger.SetLevel(logrus.DebugLevel)
+		formatConfig.enableColor = true
+		formatConfig.errorWrite = src
 	} else {
 		Logger.Out = src
 		Logger.SetLevel(logrus.InfoLevel)
-		formatConfig.PrettyPrint = true
-		// Logger.AddHook(Hook)
 	}
 	Logger.SetFormatter(formatConfig)
 
 	Logger.Info("Logger Start")
-	// Logger.Fatal("close")
-	// Logger.Panic("panic close")
 }

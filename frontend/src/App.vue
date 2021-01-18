@@ -14,8 +14,12 @@ export default {
   mounted() {
 
     (async () => {
-      const data = await fetch("/api/abc", {
-        method: 'POST'
+      const data = await fetch("/api/abc?a=2", {
+        method: 'POST',
+        body: JSON.stringify({
+          a: 1,
+          b: 2
+        })
       })
       console.log(data)
     })()

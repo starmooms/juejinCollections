@@ -8,6 +8,7 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
+	log := logger.GetLog()
 	return func(c *gin.Context) {
 		// 开始时间
 		startTime := time.Now()
@@ -34,7 +35,7 @@ func Logger() gin.HandlerFunc {
 		clientIP := c.ClientIP()
 
 		//日志格式
-		logger.Logger.Debugf("| %3d | %13v | %15s | %s  %s ",
+		log.Debugf("| %3d | %13v | %15s | %s  %s ",
 			statusCode,
 			latencyTime,
 			clientIP,

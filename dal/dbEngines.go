@@ -2,11 +2,13 @@ package dal
 
 import (
 	"fmt"
+	"juejinCollections/logger"
 	"juejinCollections/model"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"xorm.io/xorm"
+	"xorm.io/xorm/log"
 	"xorm.io/xorm/names"
 )
 
@@ -28,6 +30,10 @@ func (d *Dal) Init() error {
 		fmt.Println("dal Error", err)
 		return err
 	}
+
+	xLog := log.NewSimpleLogger(logger.GetFile())
+	// log.Infof(format string, args ...interface{})
+	engine.SetLogger(xLog)
 
 	if err := engine.Ping(); err != nil {
 		fmt.Println("dal Error", err)

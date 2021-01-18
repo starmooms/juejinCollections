@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"juejinCollections/collectReq"
+	"juejinCollections/config"
 	"juejinCollections/middleware"
-
 	// "juejinCollections/httpRequest"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 
 	_ "juejinCollections/dal"
@@ -15,8 +16,16 @@ import (
 
 func main() {
 	// r := gin.Default()
+	conf := config.Config
+
+	if conf.Debug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	r := gin.New()
-	r.Use(middleware.Logger(), middleware.Recovery())
+	r.Use(middleware.Logger(), gin.Recovery(), middleware.Recovery())
 
 	// r.Use(gin.CustomRecovery(func(c *gin.Context, recovered interface{}) {
 	// 	if err, ok := recovered.(string); ok {
@@ -43,7 +52,9 @@ func main() {
 	r.StaticFile("/favicon.ico", "frontend/dist/favicon.ico")
 
 	r.POST("/api/abc", func(c *gin.Context) {
-		panic("?")
+		// panic(aE.New("??"))
+		panic(errors.New("??"))
+
 		// c.JSON(http.StatusOK, gin.H{
 		// 	"status": true,
 		// 	"data": gin.H{
@@ -95,5 +106,6 @@ func main() {
 	// 	// })
 	// 	c.HTML(http.StatusOK, "index.html", gin.H{})
 	// })
-	r.Run("localhost:8012") // listen and serve on 0.0.0.0:8080
+
+	r.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 }
