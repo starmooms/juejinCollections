@@ -2,19 +2,18 @@ package dal
 
 import (
 	"fmt"
-	"juejinCollections/logger"
 	"juejinCollections/model"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"xorm.io/xorm"
-	"xorm.io/xorm/log"
 	"xorm.io/xorm/names"
 )
 
 var DbDal *Dal
 
-func init() {
+// 创建生成数据库
+func NewDal() {
 	DbDal = &Dal{}
 	DbDal.Init()
 }
@@ -31,9 +30,7 @@ func (d *Dal) Init() error {
 		return err
 	}
 
-	xLog := log.NewSimpleLogger(logger.GetFile())
-	// log.Infof(format string, args ...interface{})
-	engine.SetLogger(xLog)
+	engine.SetLogger(DalLogNew())
 
 	if err := engine.Ping(); err != nil {
 		fmt.Println("dal Error", err)

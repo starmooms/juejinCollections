@@ -34,8 +34,7 @@ func getFileName(keys []string) []string {
 	return fileKey
 }
 
-
-func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, valList interface{}) (sql.Result, error) {
+func insertOrUpdate(mainKey, updateKey, otherKey []string, valList interface{}) (sql.Result, error) {
 	sliceValue := reflect.Indirect(reflect.ValueOf(valList))
 	if sliceValue.Kind() != reflect.Slice {
 		return nil, errors.New("valList needs a slice")
@@ -50,6 +49,11 @@ func insertOrUpdate(tabelName string, mainKey, updateKey, otherKey []string, val
 	insertKey := append(mainKey, updateKey...)
 	insertKey = append(insertKey, otherKey...)
 	insertKeySql := strings.Join(insertKey, ",")
+
+	// 获取表名
+	sliceFirst := sliceValue.Index(0)
+	tnRv := sliceFirst.Addr().MethodByName("TableName").Call([]reflect.Value{})[0]
+	tabelName := tnRv.String()
 
 	// 插入的values
 	var args []interface{}
@@ -120,11 +124,13 @@ func setTimeFile(fileKey []string, list interface{}) error {
 
 // 添加收藏列表
 func AddTags(list *[]model.TagModel) (sql.Result, error) {
-	tagModel := &model.TagModel{}
-	tabelName := tagModel.TableName()
 	mainKey := []string{"id"}
 	updateKey := []string{"tag_id", "tag_name", "color", "icon", "back_ground", "ctime", "mtime", "status", "creator_id", "user_name", "post_article_count", "concern_user_count", "isfollowed", "is_has_in", "update_time"}
 	otherKey := []string{"create_time"}
 	setTimeFile([]string{"CreateTime", "UpdateTime"}, list)
-	return insertOrUpdate(tabelName, mainKey, updateKey, otherKey, list)
+	return insertOrUpdate(mainKey, updateKey, otherKey, list)
 }
+
+// func AddArticle(article *[]model.ArticleModel) (sql.Result, error) {
+// 	DbDal.Engine.Get()
+// }

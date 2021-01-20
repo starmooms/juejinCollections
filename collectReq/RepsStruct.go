@@ -11,7 +11,7 @@ type ResBase struct {
 
 // 请求收藏列表返回
 type CollectListStruct struct {
-	*ResBase
+	ResBase
 	Data     []model.TagModel `json:"data"`
 	Cursor   string           `json:"cursor"`
 	Count    int              `json:"count"`
@@ -20,6 +20,6 @@ type CollectListStruct struct {
 
 // 请求文章返回
 type ArticleRes struct {
-	*ResBase
-	Data []byte `json:"data"`
+	ResBase
+	// Data []byte `json:"data"`
 }

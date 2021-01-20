@@ -7,9 +7,10 @@ import (
 )
 
 var Config = struct {
-	Debug bool   `default:"false"`
-	Host  string `default:"localhost"`
-	Port  int    `default:"8014"`
+	Debug  bool   `default:"false"`
+	Host   string `default:"localhost"`
+	Port   int    `default:"8014"`
+	DbFile string `default:"./main.db"`
 }{}
 
 func init() {

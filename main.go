@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"juejinCollections/collectReq"
 	"juejinCollections/config"
+	"juejinCollections/logger"
 	"juejinCollections/middleware"
+
 	// "juejinCollections/httpRequest"
 	"net/http"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 
-	_ "juejinCollections/dal"
+	dal "juejinCollections/dal"
 )
 
 func main() {
@@ -19,10 +21,12 @@ func main() {
 	conf := config.Config
 
 	if conf.Debug {
+		logger.SetDebugLog(true)
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	dal.NewDal()
 
 	r := gin.New()
 	r.Use(middleware.Logger(), gin.Recovery(), middleware.Recovery())
@@ -64,48 +68,6 @@ func main() {
 		// })
 	})
 
-	// https://api.juejin.cn/interact_api/v1/collectionSet/list
-	// 1116759544852221
-	// 2664871913078168
-	// httpReq := httpRequest.Request(&httpRequest.HttpRequest{
-	// 	Url:    "http://www-test.yingsheng.com/webhome/api/operate",
-	// 	Method: "GET",
-	// 	Params: &gin.H{
-	// 		"user_id": 1116759544852221,
-	// 		"cursor":  0,
-	// 		"limit":   20,
-	// 	},
-	// })
-	// data, err := httpReq.DoRequest()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println(data)
-
-	// httpReq2 := httpRequest.Request(&httpRequest.HttpRequest{
-	// 	Url:    "http://www-test.yingsheng.com/webhome/api/operate",
-	// 	Method: "POST",
-	// })
-	// data2, err2 := httpReq2.DoRequest()
-	// if err2 != nil {
-	// 	fmt.Println(err2)
-	// }
-	// fmt.Println(data2)
-
 	collectReq.GetTagList()
-
-	// httpRequest.Get("http://www-test.yingsheng.com/webhome/api/operate", &gin.H{
-	// 	"user_id": 1116759544852221,
-	// 	"cursor":  0,
-	// 	"limit":   20,
-	// })
-
-	// r.GET("/*url", func(c *gin.Context) {
-	// 	// c.JSON(200, gin.H{
-	// 	// 	"message": "pong",
-	// 	// })
-	// 	c.HTML(http.StatusOK, "index.html", gin.H{})
-	// })
-
 	r.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 }

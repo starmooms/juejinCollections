@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"juejinCollections/dal"
 	"juejinCollections/httpRequest"
+	"juejinCollections/model"
 
+	"github.com/buger/jsonparser"
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +21,12 @@ func init() {
 
 func setError(err error) error {
 	wrapError := errors.NewWithDepth(1, err.Error())
+	fmt.Printf("%+v \n", wrapError)
+	return wrapError
+}
+
+func setNewError(msg string) error {
+	wrapError := errors.NewWithDepth(1, msg)
 	fmt.Printf("%+v \n", wrapError)
 	return wrapError
 }
@@ -84,10 +92,23 @@ func GetArticle(id string) error {
 	// }
 
 	fmt.Println(httpReq.Url)
+	var err error
 	res := &ArticleRes{}
-	if err := json.Unmarshal(*dataMock.Article, res); err != nil {
+	if err = json.Unmarshal(*dataMock.Article, res); err != nil {
 		return setError(err)
 	}
+	if res.Err_no != 0 {
+		return setNewError("Request Back Error:" + res.Err_msg)
+	}
+	hitsjson, _, _, err := jsonparser.Get(*dataMock.Article, "data", "article_info")
+	if err != nil {
+		return setError(err)
+	}
+	article := &model.ArticleModel{}
+	if err = json.Unmarshal(hitsjson, article); err != nil {
+		return setError(err)
+	}
+	fmt.Println(article)
 
 	fmt.Println(res)
 	return nil

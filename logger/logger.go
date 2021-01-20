@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"os"
 	"path"
 	"time"
@@ -8,10 +9,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const isDebug = true
-
 var Logger *logrus.Logger
 var src *os.File
+var ioWrite io.Writer
+var LoggerDebug = false
 
 func GetLog() *logrus.Logger {
 	return Logger
@@ -19,6 +20,10 @@ func GetLog() *logrus.Logger {
 
 func GetFile() *os.File {
 	return src
+}
+
+func GetIoWrite() io.Writer {
+	return ioWrite
 }
 
 func init() {
@@ -51,20 +56,32 @@ func init() {
 	}
 
 	Logger = logrus.New()
+	SetDebugLog(LoggerDebug)
+
+	Logger.Info("Logger Start")
+}
+
+func SetDebugLog(isDebug bool) {
 	formatConfig := &MyFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 		enableColor:     false,
 	}
 	if isDebug {
-		Logger.SetOutput(os.Stdout)
+		ioWrite = os.Stdout
 		Logger.SetLevel(logrus.DebugLevel)
 		formatConfig.enableColor = true
 		formatConfig.errorWrite = src
+		LoggerDebug = true
 	} else {
-		Logger.Out = src
+		ioWrite = src
 		Logger.SetLevel(logrus.InfoLevel)
+		formatConfig.errorWrite = os.Stdout
+		LoggerDebug = false
 	}
+	Logger.SetOutput(ioWrite)
 	Logger.SetFormatter(formatConfig)
 
-	Logger.Info("Logger Start")
+	if isDebug {
+		Logger.Info("Logger is Set isDebug")
+	}
 }
