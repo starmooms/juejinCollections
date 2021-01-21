@@ -68,6 +68,7 @@ func main() {
 		// })
 	})
 
-	collectReq.GetTagList()
+	
+	collectReq.Run()
 	r.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 }

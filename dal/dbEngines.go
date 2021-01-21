@@ -1,8 +1,8 @@
 package dal
 
 import (
-	"fmt"
 	"juejinCollections/model"
+	"juejinCollections/tool"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -25,17 +25,12 @@ type Dal struct {
 func (d *Dal) Init() error {
 
 	engine, err := xorm.NewEngine("sqlite3", "./test.db")
-	if err != nil {
-		fmt.Println("dal Error", err)
-		return err
-	}
+	tool.PanicErr(err)
 
 	engine.SetLogger(DalLogNew())
 
-	if err := engine.Ping(); err != nil {
-		fmt.Println("dal Error", err)
-		return err
-	}
+	err = engine.Ping()
+	tool.PanicErr(err)
 
 	// engine.ShowSQL(true)                  // 打印sql语句
 	engine.SetMapper(names.GonicMapper{}) // 支持结构体名称和对应的表名称以及结构体field名称与对应的表字段名称相同的命名
@@ -74,9 +69,10 @@ func (d *Dal) Init() error {
 	// 	`)
 	// }
 
-	if err := engine.Sync2(new(model.TagModel)); err != nil {
-		fmt.Println(err)
-		return err
-	}
+	err = engine.Sync2(new(model.TagModel))
+	tool.PanicErr(err)
+
+	err = engine.Sync2(new(model.ArticleModel))
+	tool.PanicErr(err)
 	return nil
 }

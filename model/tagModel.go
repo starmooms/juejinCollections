@@ -18,8 +18,8 @@ type TagModel struct {
 	ConcernUserCount uint      `json:"concern_user_count"`
 	Isfollowed       bool      `json:"isfollowed"`
 	IsHasIn          bool      `json:"is_has_in"`
-	CreateTime       time.Time `json:"createTime" xorm:"created"`
-	UpdateTime       time.Time `json:"updateTime" xorm:"updated"`
+	CreateTime       time.Time `json:"create_time" xorm:"created"`
+	UpdateTime       time.Time `json:"update_time" xorm:"updated"`
 }
 
 func (m *TagModel) TableName() string {
