@@ -26,6 +26,7 @@ type HttpRequest struct {
 	Method string
 	Params *gin.H
 	Req    *http.Request
+	DoMock func() (*ResData, error)
 }
 
 func (h *HttpRequest) setQuery() {
@@ -100,6 +101,10 @@ func (h *HttpRequest) NewRequest() (*http.Request, error) {
 }
 
 func (h *HttpRequest) DoRequest() (*ResData, error) {
+	if h.DoMock != nil {
+		return h.DoMock()
+	}
+
 	switch h.Method {
 	case "GET":
 		h.setQuery()
