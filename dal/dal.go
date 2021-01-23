@@ -121,11 +121,22 @@ func AddTags(list *[]model.TagModel) (sql.Result, error) {
 	return insertOrUpdate(main, noUpdate, list, nil)
 }
 
-func AddArticle(article *model.ArticleModel) (sql.Result, error) {
+// 添加文章
+func AddArticle(article *[]*model.ArticleModel) (sql.Result, error) {
 	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, article)
 	main := []string{"ArticleId"}
 	noUpdate := []string{"CreateTime"}
-	return insertOrUpdate(main, noUpdate, []*model.ArticleModel{article}, func(tbName string) string {
+	return insertOrUpdate(main, noUpdate, article, func(tbName string) string {
 		return fmt.Sprintf("excluded.%[1]s!=%[2]s.%[1]s", "ctime", tbName)
+	})
+}
+
+// 添加收藏与文章关联id
+func AddTagArticle(tagArticle *[]*model.TagArticleModel) (sql.Result, error) {
+	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, tagArticle)
+	main := []string{"TagId", "ArticleId"}
+	noUpdate := []string{"CreateTime"}
+	return insertOrUpdate(main, noUpdate, tagArticle, func(tbName string) string {
+		return fmt.Sprintf("excluded.create_time is NULL")
 	})
 }

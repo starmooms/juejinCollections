@@ -32,7 +32,7 @@ func (d *Dal) Init() error {
 	err = engine.Ping()
 	tool.PanicErr(err)
 
-	// engine.ShowSQL(true)                  // 打印sql语句
+	//	engine.ShowSQL(true)                  // 打印sql语句
 	engine.SetMapper(names.GonicMapper{}) // 支持结构体名称和对应的表名称以及结构体field名称与对应的表字段名称相同的命名
 	engine.DatabaseTZ, _ = time.LoadLocation("Local")
 
@@ -69,10 +69,9 @@ func (d *Dal) Init() error {
 	// 	`)
 	// }
 
-	err = engine.Sync2(new(model.TagModel))
-	tool.PanicErr(err)
+	tool.PanicErr(engine.Sync2(new(model.TagModel)))
+	tool.PanicErr(engine.Sync2(new(model.ArticleModel)))
+	tool.PanicErr(engine.Sync2(new(model.TagArticleModel)))
 
-	err = engine.Sync2(new(model.ArticleModel))
-	tool.PanicErr(err)
 	return nil
 }

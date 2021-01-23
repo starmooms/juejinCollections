@@ -7,12 +7,16 @@ import (
 )
 
 type ResBase struct {
-	Err_no  int    `json:"err_no"`
+	Err_no  *int   `json:"err_no"`
 	Err_msg string `json:"err_msg"`
 }
 
-func (r *ResBase) GetBase() (int, string) {
-	return r.Err_no, r.Err_msg
+func (r *ResBase) CheckErr() error {
+	errNo := r.Err_no
+	if errNo == nil || *errNo != 0 {
+		return errors.Newf("juejing RequestErr: Code %d\n %s\n", *errNo, r.Err_msg)
+	}
+	return nil
 }
 
 // 请求收藏列表返回
@@ -28,16 +32,4 @@ type CollectListStruct struct {
 type ArticleRes struct {
 	ResBase
 	// Data []byte `json:"data"`
-}
-
-type ResBaseData interface {
-	GetBase() (int, string)
-}
-
-func CheckErr(res ResBaseData) error {
-	Err_no, Err_msg := res.GetBase()
-	if Err_no != 0 {
-		return errors.NewWithDepth(1, "JJ RequestErr:"+Err_msg)
-	}
-	return nil
 }
