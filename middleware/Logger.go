@@ -34,8 +34,13 @@ func Logger() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 
+		logFun := log.Debugf
+		if statusCode >= 400 {
+			logFun = log.Errorf
+		}
+
 		//日志格式
-		log.Debugf("| %3d | %13v | %15s | %s  %s ",
+		logFun("| %3d | %13v | %15s | %s  %s ",
 			statusCode,
 			latencyTime,
 			clientIP,

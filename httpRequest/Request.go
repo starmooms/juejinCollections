@@ -1,7 +1,5 @@
 package httpRequest
 
-import "juejinCollections/logger"
-
 type MiddleFunc = func(h *HttpRequest, next func() error) error
 
 type RequestWarp struct {
@@ -14,7 +12,6 @@ func (r *RequestWarp) Use(n ...MiddleFunc) {
 
 func (r *RequestWarp) GetNewRequest(h *HttpRequest) (*HttpRequest, error) {
 	h.rw = r
-	logger.Logger.Debug(h.Params)
 	_, err := h.NewRequest()
 	return h, err
 }

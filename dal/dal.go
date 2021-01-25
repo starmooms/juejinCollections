@@ -140,3 +140,22 @@ func AddTagArticle(tagArticle *[]*model.TagArticleModel) (sql.Result, error) {
 		return fmt.Sprintf("excluded.create_time is NULL")
 	})
 }
+
+// 判断图片是否已存在
+func HasImage(imageUrl string, articleId string) (bool, error) {
+	return DbDal.Engine.Exist(&model.Image{
+		Url:       imageUrl,
+		ArticleId: articleId,
+	})
+}
+
+// 添加图片
+func AddImage(image *model.Image) (int64, error) {
+	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, image)
+	return DbDal.Engine.Insert(image)
+}
+
+// 获取图片
+func GetImage(image *model.Image) (bool, error) {
+	return DbDal.Engine.Get(image)
+}

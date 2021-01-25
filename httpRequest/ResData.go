@@ -5,6 +5,7 @@ import (
 )
 
 type ResData struct {
+	Resp       *http.Response
 	StatusCode int
 	Data       *[]byte
 }
@@ -19,6 +20,7 @@ func ResDataBack(resp *http.Response, data *[]byte) *ResData {
 	// fmt.Printf("[%s]\n", strings.Join(byteArr, ","))
 
 	return &ResData{
+		Resp:       resp,
 		StatusCode: resp.StatusCode,
 		Data:       data,
 	}

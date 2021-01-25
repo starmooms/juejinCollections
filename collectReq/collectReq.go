@@ -14,9 +14,14 @@ import (
 )
 
 var log = logger.GetLog()
+
 var requestWrap = &httpRequest.RequestWarp{}
 var request = requestWrap.GetNewRequest
-var userMock = true
+
+var imgRequestWrap = &httpRequest.RequestWarp{}
+var imgRequest = imgRequestWrap.GetNewRequest
+
+var userMock = false
 
 func init() {
 	if userMock {
@@ -44,24 +49,12 @@ func init() {
 }
 
 func Run() {
-	wg := tool.NewWaitGroup(10)
-	wg.Add(func() {
-		GetTagList("1116759544852221")
-	})
-	// wg.Add(func() {
-	// 	GetArticle("6844904034181070861")
-	// })
-	// wg.Add(func() {
-	// 	err := GetCollectData("6889585424071655431", 10)
-	// 	if err != nil {
-	// 		tool.BackError(err)
-	// 	}
-	// })
-	wg.Wait()
+	ac := NewAction("1116759544852221")
+	ac.Start()
 }
 
 // 获取收藏列表
-func GetTagList(userId string) (err error) {
+func GetTagList(userId string) (_ *[]model.TagModel, err error) {
 	reqCollectList := &CollectListStruct{}
 	httpReq, err := request(&httpRequest.HttpRequest{
 		Url:    GET_TAGSLIST,
@@ -74,21 +67,20 @@ func GetTagList(userId string) (err error) {
 		ResJson: reqCollectList,
 	})
 	if err != nil {
-		return tool.BackError(err)
+		return nil, err
 	}
 
 	_, err = httpReq.DoRequest()
 	if err != nil {
-		return tool.BackError(err)
-	}
-	// reqCollectList := &CollectListStruct{}
-	// json.Unmarshal(*result.Data, reqCollectList)
-
-	if _, err := dal.AddTags(&reqCollectList.Data); err != nil {
-		return tool.BackError(err)
+		return nil, err
 	}
 
-	return nil
+	tagList := &reqCollectList.Data
+	if _, err := dal.AddTags(tagList); err != nil {
+		return nil, err
+	}
+
+	return tagList, nil
 }
 
 // 通过id获取文章
@@ -133,25 +125,28 @@ func GetArticle(id string) (err error) {
 }
 
 // 获取收藏内容
-func GetCollectData(tagId string, cursor int) (err error) {
+func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.ArticleModel, err error) {
+	collectData = &CollectArticle{}
+
 	httpReq, err := request(&httpRequest.HttpRequest{
 		Url:    GET_COLLECTDATA,
-		Method: "POST",
+		Method: "GET",
 		Params: &gin.H{
 			"tag_id": tagId,
 			"cursor": cursor,
 		},
+		ResJson: collectData,
 	})
 	if err != nil {
-		return err
+		return
 	}
 
 	result, err := httpReq.DoRequest()
 	if err != nil {
-		return err
+		return
 	}
 
-	collectData := []*model.ArticleModel{}
+	articleList := []*model.ArticleModel{}
 	tagArticle := []*model.TagArticleModel{}
 	var jsonErr *error = nil
 	_, err = jsonparser.ArrayEach(*result.Data, func(value []byte, dataType jsonparser.ValueType, offset int, eachErr error) {
@@ -172,7 +167,8 @@ func GetCollectData(tagId string, cursor int) (err error) {
 			jsonErr = &err
 			return
 		}
-		collectData = append(collectData, artItem)
+
+		articleList = append(articleList, artItem)
 		tagArticle = append(tagArticle, &model.TagArticleModel{
 			TagId:     tagId,
 			ArticleId: artItem.ArticleId,
@@ -184,16 +180,56 @@ func GetCollectData(tagId string, cursor int) (err error) {
 		err = *jsonErr
 	}
 	if err != nil {
-		return err
+		return
 	}
 
-	if _, err = dal.AddArticle(&collectData); err != nil {
-		return err
+	articleListPtr = &articleList
+	if _, err = dal.AddArticle(articleListPtr); err != nil {
+		return
 	}
 
 	if _, err = dal.AddTagArticle(&tagArticle); err != nil {
+		return
+	}
+
+	return
+}
+
+// 获取图片
+func GetImageData(imageUrl string, articleId string) (err error) {
+	has, err := dal.HasImage(imageUrl, articleId)
+	if err != nil {
+		return err
+	}
+
+	if has {
+		return nil
+	}
+
+	httpReq, err := imgRequest(&httpRequest.HttpRequest{
+		Url:    imageUrl,
+		Method: "GET",
+	})
+	if err != nil {
+		return err
+	}
+
+	result, err := httpReq.DoRequest()
+	if err != nil {
+		return err
+	}
+
+	_, err = dal.AddImage(&model.Image{
+		ArticleId: articleId,
+		Url:       imageUrl,
+		Code:      result.Resp.StatusCode,
+		Ctype:     result.Resp.Header.Get("content-type"),
+		Data:      *result.Data,
+	})
+	if err != nil {
 		return err
 	}
 
 	return nil
+
 }

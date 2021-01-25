@@ -3,7 +3,6 @@ package httpRequest
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"juejinCollections/logger"
 	"juejinCollections/tool"
@@ -39,6 +38,10 @@ type HttpRequest struct {
 }
 
 func (h *HttpRequest) setQuery() {
+	if h.Params == nil {
+		return
+	}
+
 	req := h.Req
 	q := req.URL.Query()
 	params := *h.Params
@@ -59,7 +62,6 @@ func (h *HttpRequest) setQuery() {
 			value = strconv.FormatBool(val.(bool))
 		}
 
-		fmt.Println("key, value", key, value)
 		q.Add(key, value)
 		// q.Add(p, strings(val))
 	}
@@ -76,7 +78,6 @@ func (h *HttpRequest) setJSONBody() error {
 		h.Req.Body = ioutil.NopCloser(bytes.NewReader(byts))
 		h.Req.ContentLength = int64(len(byts))
 		h.SetHeader("Content-Type", "application/json")
-		return nil
 	}
 	return nil
 }
@@ -125,11 +126,11 @@ func (h *HttpRequest) DoRequest() (data *ResData, err error) {
 
 	err = next()
 	if err != nil {
+		h.PrintReq(true)
 		return nil, err
 	}
 
-	h.PrintReq()
-
+	h.PrintReq(false)
 	return data, err
 }
 
@@ -171,7 +172,7 @@ func (h *HttpRequest) Do() (*ResData, error) {
 	return ResDataBack(resp, &body), nil
 }
 
-func (h *HttpRequest) PrintReq() {
+func (h *HttpRequest) PrintReq(isErr bool) {
 	var err error
 	reqBody := "null"
 	if h.Req.Body != nil {
@@ -182,22 +183,48 @@ func (h *HttpRequest) PrintReq() {
 		reqBody = string(reqBodyByt)
 	}
 
-	reqQuery := h.Req.URL.Query()
+	query := h.Req.URL.Query()
+	reqQuery := map[string]interface{}{}
+	for key, item := range query {
+		var v interface{}
+		if len(item) == 1 {
+			v = item[0]
+		} else {
+			v = item
+		}
+		reqQuery[key] = v
+	}
+
+	params := gin.H{}
+	if h.Params != nil {
+		params = *h.Params
+	}
+
+	statucCode := h.ResData.StatusCode
 
 	data := map[string]interface{}{
-		"url": h.Req.URL.RequestURI(),
+		"url":    h.Url,
+		"params": params,
 		"request": map[string]interface{}{
 			"Content-Type": h.Req.Header.Get("Content-Type"),
 			"body":         string(reqBody),
 			"query":        reqQuery,
-			"params":       *h.Params,
 		},
-		// "respond": map[string]interface{},
+		"respond": map[string]interface{}{
+			"Status Code": h.ResData.StatusCode,
+			"data":        tool.LimtStr(string(*h.ResData.Data), 200),
+		},
 	}
-	dataStr, err := json.MarshalIndent(data, "", "  ")
+	dataByt, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		tool.BackError(errors.Wrap(err, "PrintReq MarshalIndent Err"))
 	}
 
-	log.Info(string(dataStr))
+	dataStr := string(dataByt)
+
+	if isErr || (statucCode != 200 && statucCode != 0) {
+		log.Error(dataStr)
+	} else {
+		log.Info(dataStr)
+	}
 }

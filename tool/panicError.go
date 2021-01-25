@@ -54,3 +54,10 @@ func BackNewError(msg string, depth ...int) error {
 	logs.Errorf("%+v\n", err)
 	return err
 }
+
+/** 返回并打印错误 */
+func ShowErr(err error) error {
+	err = SetErrStack(err, 2)
+	logs.Errorf("%+v\n", err)
+	return err
+}

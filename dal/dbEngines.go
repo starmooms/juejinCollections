@@ -72,6 +72,7 @@ func (d *Dal) Init() error {
 	tool.PanicErr(engine.Sync2(new(model.TagModel)))
 	tool.PanicErr(engine.Sync2(new(model.ArticleModel)))
 	tool.PanicErr(engine.Sync2(new(model.TagArticleModel)))
+	tool.PanicErr(engine.Sync2(new(model.Image)))
 
 	return nil
 }

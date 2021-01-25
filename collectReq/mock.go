@@ -12,6 +12,7 @@ type Mock struct {
 	Article     *[]byte
 	Tags        *[]byte
 	CollectData *[]byte
+	Img         *[]byte
 }
 
 /** 创建mock数据 */
@@ -43,15 +44,17 @@ func (m *MockReq) MockRequest(h *httpRequest.HttpRequest, next func() error) err
 	switch h.Url {
 	case GET_TAGSLIST:
 		mockData = m.mock.Tags
-	case GET_ARTICLE:
-		mockData = m.mock.Article
-	case GET_COLLECTDATA:
-		mockData = m.mock.CollectData
-	default:
-		mockData = &[]byte{}
+		case GET_ARTICLE:
+			mockData = m.mock.Article
+		case GET_COLLECTDATA:
+			mockData = m.mock.CollectData
+		default:
+			mockData = &[]byte{}
 	}
-	h.DoMock = func() (*[]byte, error) {
-		return mockData, nil
+	if mockData != nil {
+		h.DoMock = func() (*[]byte, error) {
+			return mockData, nil
+		}
 	}
 	return next()
 }

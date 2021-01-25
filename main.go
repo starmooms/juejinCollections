@@ -6,11 +6,11 @@ import (
 	"juejinCollections/config"
 	"juejinCollections/logger"
 	"juejinCollections/middleware"
+	"juejinCollections/model"
 
-	// "juejinCollections/httpRequest"
 	"net/http"
+	"net/url"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 
 	dal "juejinCollections/dal"
@@ -38,9 +38,7 @@ func main() {
 	// 	c.AbortWithStatus(http.StatusInternalServerError)
 	// }))
 
-	r.LoadHTMLGlob("frontend/dist/*.html")
-	r.NoRoute(func(c *gin.Context) {
-		fmt.Println("end")
+	noRoute := func(c *gin.Context) {
 		if c.Request.Method == "GET" {
 			c.HTML(http.StatusOK, "index.html", gin.H{})
 		} else {
@@ -49,26 +47,49 @@ func main() {
 				"msg":    "NOT FOUND",
 			})
 		}
+	}
 
-	})
+	r.LoadHTMLGlob("frontend/dist/*.html")
+	r.NoRoute(noRoute)
+	r.NoMethod(noRoute)
 
 	r.Static("/_assets", "frontend/dist/_assets")
 	r.StaticFile("/favicon.ico", "frontend/dist/favicon.ico")
 
-	r.POST("/api/abc", func(c *gin.Context) {
-		// panic(aE.New("??"))
-		panic(errors.New("??"))
-
-		// c.JSON(http.StatusOK, gin.H{
-		// 	"status": true,
-		// 	"data": gin.H{
-		// 		"a": 1,
-		// 		"b": 2,
-		// 	},
-		// })
+	imageGroup := r.Group("/images")
+	imageGroup.GET("/article/:articleId", func(c *gin.Context) {
+		fmt.Println("??")
+		url, err := url.PathUnescape(c.Query("url"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		image := &model.Image{
+			Url:       url,
+			ArticleId: c.Param("articleId"),
+		}
+		dal.GetImage(image)
+		if image.Code == 0 {
+			image.Code = 404
+		}
+		c.Data(image.Code, image.Ctype, image.Data)
 	})
 
-	
+	r.POST("/api/abc", func(c *gin.Context) {
+		// panic(aE.New("??"))
+		// panic(errors.New("??"))
+
+		c.JSON(http.StatusOK, gin.H{
+			"status": true,
+			"data": gin.H{
+				"a": 1,
+				"b": 2,
+			},
+		})
+	})
+
+	r.Any("/", noRoute)
+
 	collectReq.Run()
 	r.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 }

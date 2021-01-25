@@ -19,17 +19,32 @@ func (r *ResBase) CheckErr() error {
 	return nil
 }
 
+// 分页列表
+type ResCursor struct {
+	Cursor   string `json:"cursor"`
+	Count    int    `json:"count"`
+	Has_more bool   `json:"has_more"`
+}
+
+func (r *ResCursor) HasMore() bool {
+	return r.Has_more
+}
+
 // 请求收藏列表返回
 type CollectListStruct struct {
 	ResBase
-	Data     []model.TagModel `json:"data"`
-	Cursor   string           `json:"cursor"`
-	Count    int              `json:"count"`
-	Has_more bool             `json:"has_more"`
+	ResCursor
+	Data []model.TagModel `json:"data"`
 }
 
 // 请求文章返回
 type ArticleRes struct {
 	ResBase
 	// Data []byte `json:"data"`
+}
+
+// 收藏夹中的文章列表
+type CollectArticle struct {
+	ResBase
+	ResCursor
 }

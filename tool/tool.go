@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -108,4 +109,13 @@ func GetSqlKeyMap(rv reflect.Value) (sqlKeyMap map[string]string, err error) {
 		sqlKeyMap[sqlKey] = fieldName
 	}
 	return
+}
+
+/** 限制字符传长度 */
+func LimtStr(str string, limt int) string {
+	strLen := len(str)
+	if strLen > limt {
+		str = fmt.Sprintf("%s ...+%d", string(str[0:limt]), strLen-limt)
+	}
+	return str
 }
