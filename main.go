@@ -90,6 +90,15 @@ func main() {
 
 	r.Any("/", noRoute)
 
-	collectReq.Run()
+	logger.ExitHook.Add(func() {
+		if dal.DbDal.Engine != nil {
+			dal.DbDal.Engine.Close()
+		}
+	})
+
+	go collectReq.Run()
+	// if !conf.Debug {
+	// 	go collectReq.Run()
+	// }
 	r.Run(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
 }

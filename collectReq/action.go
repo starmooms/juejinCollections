@@ -1,9 +1,13 @@
 package collectReq
 
 import (
+	"fmt"
+	"juejinCollections/dal"
+	"juejinCollections/logger"
 	"juejinCollections/model"
 	"juejinCollections/tool"
 	"regexp"
+	"time"
 
 	"github.com/cockroachdb/errors"
 )
@@ -20,7 +24,45 @@ func NewAction(userId string) *Action {
 	}
 }
 
-func (ac *Action) Start() {
+func (ac *Action) Run() {
+	var err error
+
+	startTime := time.Now()
+
+	err = dal.DbDal.OpenWal()
+	if err != nil {
+		tool.ShowErr(err)
+		return
+	}
+
+	ac.start()
+	ac.wg.Wait()
+
+	err = dal.DbDal.CloseWal()
+	if err != nil {
+		tool.ShowErr(err)
+	}
+
+	endTime := time.Now()
+	latencyTime := endTime.Sub(startTime)
+
+	tFormat := "2006-01-02 15:04:05"
+	sTime := startTime.Format(tFormat)
+	eTime := endTime.Format(tFormat)
+	logger.Logger.Infof(`{
+		"start": "%s",
+		"end": "%s",
+		"run": "%v",
+		"taskTotal": %d
+	}`,
+		sTime,
+		eTime,
+		latencyTime,
+		ac.wg.TaskRunLen,
+	)
+}
+
+func (ac *Action) start() {
 	ac.wg.Add(func() {
 		tagList, err := GetTagList(ac.UserId)
 		if err != nil {
@@ -28,14 +70,13 @@ func (ac *Action) Start() {
 			return
 		}
 		for _, tagItem := range *tagList {
-			ac.SaveCollectData(tagItem.TagId)
+			ac.saveCollectData(tagItem.TagId)
 		}
 	})
-	ac.wg.Wait()
 }
 
 // 保存收藏夹文章
-func (ac *Action) SaveCollectData(tagId string) {
+func (ac *Action) saveCollectData(tagId string) {
 	ac.wg.Add(func() {
 		var collectData = &CollectArticle{}
 		collectData.Has_more = true
@@ -52,21 +93,21 @@ func (ac *Action) SaveCollectData(tagId string) {
 			collectData = newData
 			cursor += len(*articleList)
 			for _, article := range *articleList {
-				ac.SaveArticleImg(article)
+				ac.saveArticleImg(article)
 			}
 		}
 	})
 }
 
 // 保存文章图片
-func (ac *Action) SaveArticleImg(m *model.ArticleModel) {
+func (ac *Action) saveArticleImg(m *model.ArticleModel) {
 	if m == nil {
 		return
 	}
 
 	imageResult := [][]string{}
 	if m.MarkContent != "" {
-		reg, err := regexp.Compile("!\\[.*?\\]\\((http.+?)\\)")
+		reg, err := regexp.Compile("!\\[.*?\\]\\((http.+?)(\\s.*?)*?\\)")
 		if err != nil {
 			tool.ShowErr(errors.Wrap(err, "Get image Reg Error"))
 			return
@@ -81,14 +122,29 @@ func (ac *Action) SaveArticleImg(m *model.ArticleModel) {
 		imageResult = reg.FindAllStringSubmatch(m.Content, -1)
 	}
 
-	for _, rItem := range imageResult {
-		if len(rItem) == 2 {
-			ac.wg.Add(func() {
-				err := GetImageData(rItem[1], m.ArticleId)
-				if err != nil {
-					tool.ShowErr(err)
-				}
-			})
-		}
+	if len(imageResult) > 2 {
+		fmt.Println("..")
 	}
+	for i := 0; i < 100; i++ {
+		c := i
+		ac.wg.Add(func() {
+			url := fmt.Sprintf("http://localhost:8012/%s/%d", m.ArticleId, c)
+			logger.Logger.Warn(url)
+			err := GetImageData(url, m.ArticleId)
+			if err != nil {
+				tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+			}
+		})
+	}
+
+	// for _, rItem := range imageResult {
+	// 	if len(rItem) >= 2 {
+	// 		ac.wg.Add(func() {
+	// 			err := GetImageData(rItem[1], m.ArticleId)
+	// 			if err != nil {
+	// 				tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+	// 			}
+	// 		})
+	// 	}
+	// }
 }

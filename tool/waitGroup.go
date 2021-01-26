@@ -5,11 +5,12 @@ import (
 )
 
 type WaitGroup struct {
-	limt     int
-	wg       sync.WaitGroup
-	mutex    *sync.Mutex
-	taskList []func()
-	runNum   int
+	limt       int
+	wg         sync.WaitGroup
+	mutex      *sync.Mutex
+	taskList   []func()
+	runNum     int
+	TaskRunLen int
 }
 
 func NewWaitGroup(limt int) *WaitGroup {
@@ -38,21 +39,20 @@ func (w *WaitGroup) getTask() func() {
 	if len(list) > 0 {
 		task = list[0]
 		w.taskList = list[1:]
+		w.TaskRunLen++
 	}
 	return task
 }
 
 func (w *WaitGroup) startTask(id int) {
-	task := w.getTask()
-	if task == nil {
-		w.mutex.Lock()
-		defer w.mutex.Unlock()
-		w.runNum -= 1
-		w.wg.Done()
-		return
+	for task := w.getTask(); task != nil; task = w.getTask() {
+		task()
 	}
-	task()
-	w.startTask(id)
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+	w.runNum -= 1
+	w.wg.Done()
+	return
 }
 
 func (w *WaitGroup) Wait() {

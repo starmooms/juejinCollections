@@ -21,7 +21,7 @@ var request = requestWrap.GetNewRequest
 var imgRequestWrap = &httpRequest.RequestWarp{}
 var imgRequest = imgRequestWrap.GetNewRequest
 
-var userMock = false
+var userMock = true
 
 func init() {
 	if userMock {
@@ -50,7 +50,7 @@ func init() {
 
 func Run() {
 	ac := NewAction("1116759544852221")
-	ac.Start()
+	ac.Run()
 }
 
 // 获取收藏列表

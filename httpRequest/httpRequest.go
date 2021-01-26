@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"juejinCollections/config"
 	"juejinCollections/logger"
 	"juejinCollections/tool"
 	"net/http"
@@ -130,7 +131,9 @@ func (h *HttpRequest) DoRequest() (data *ResData, err error) {
 		return nil, err
 	}
 
-	h.PrintReq(false)
+	if config.Config.Debug {
+		h.PrintReq(false)
+	}
 	return data, err
 }
 
@@ -147,6 +150,7 @@ func (h *HttpRequest) Do() (*ResData, error) {
 
 	if h.DoMock != nil {
 		resp := &http.Response{}
+		resp.StatusCode = 1000
 		mockData, err := h.DoMock()
 		if err != nil {
 			return nil, err
@@ -200,7 +204,12 @@ func (h *HttpRequest) PrintReq(isErr bool) {
 		params = *h.Params
 	}
 
-	statucCode := h.ResData.StatusCode
+	statucCode := 0
+	respondData := ""
+	if h.ResData != nil {
+		statucCode = h.ResData.StatusCode
+		respondData = tool.LimtStr(string(*h.ResData.Data), 200)
+	}
 
 	data := map[string]interface{}{
 		"url":    h.Url,
@@ -211,8 +220,8 @@ func (h *HttpRequest) PrintReq(isErr bool) {
 			"query":        reqQuery,
 		},
 		"respond": map[string]interface{}{
-			"Status Code": h.ResData.StatusCode,
-			"data":        tool.LimtStr(string(*h.ResData.Data), 200),
+			"Status Code": statucCode,
+			"data":        respondData,
 		},
 	}
 	dataByt, err := json.MarshalIndent(data, "", "  ")
@@ -222,9 +231,9 @@ func (h *HttpRequest) PrintReq(isErr bool) {
 
 	dataStr := string(dataByt)
 
-	if isErr || (statucCode != 200 && statucCode != 0) {
+	if isErr || (statucCode != 200 && statucCode != 1000) {
 		log.Error(dataStr)
 	} else {
-		log.Info(dataStr)
+		log.Debug(dataStr)
 	}
 }

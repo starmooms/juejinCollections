@@ -143,16 +143,24 @@ func AddTagArticle(tagArticle *[]*model.TagArticleModel) (sql.Result, error) {
 
 // 判断图片是否已存在
 func HasImage(imageUrl string, articleId string) (bool, error) {
-	return DbDal.Engine.Exist(&model.Image{
+	has, err := DbDal.Engine.Exist(&model.Image{
 		Url:       imageUrl,
 		ArticleId: articleId,
 	})
+	if err != nil {
+		err = errors.Wrap(err, "HasImage Err")
+	}
+	return has, err
 }
 
 // 添加图片
 func AddImage(image *model.Image) (int64, error) {
 	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, image)
-	return DbDal.Engine.Insert(image)
+	r, err := DbDal.Engine.Insert(image)
+	if err != nil {
+		err = errors.Wrap(err, "AddImage Err")
+	}
+	return r, err
 }
 
 // 获取图片

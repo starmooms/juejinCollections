@@ -44,12 +44,12 @@ func (m *MockReq) MockRequest(h *httpRequest.HttpRequest, next func() error) err
 	switch h.Url {
 	case GET_TAGSLIST:
 		mockData = m.mock.Tags
-		case GET_ARTICLE:
-			mockData = m.mock.Article
-		case GET_COLLECTDATA:
-			mockData = m.mock.CollectData
-		default:
-			mockData = &[]byte{}
+	case GET_ARTICLE:
+		mockData = m.mock.Article
+	case GET_COLLECTDATA:
+		mockData = m.mock.CollectData
+	default:
+		mockData = &[]byte{}
 	}
 	if mockData != nil {
 		h.DoMock = func() (*[]byte, error) {
