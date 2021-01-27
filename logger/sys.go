@@ -23,14 +23,17 @@ var ExitHook = &exitTask{}
 
 func init() {
 	ch := make(chan os.Signal)
-	signal.Notify(ch, os.Interrupt)
+	signal.Notify(ch, os.Interrupt, os.Kill)
 
 	go func() {
 		select {
-		case sig := <-ch:
+		case sig, err := <-ch:
+			if err {
+				Logger.Error("exit..err", err)
+			}
 			ExitHook.Start()
 			if Logger != nil {
-				Logger.Info("exit..", sig)
+				Logger.Info("exit..", sig.String())
 			}
 			os.Exit(0)
 		}

@@ -17,6 +17,9 @@ import (
 )
 
 func main() {
+	defer func() {
+		logger.Logger.Error("???")
+	}()
 	// r := gin.Default()
 	conf := config.Config
 

@@ -2,7 +2,6 @@ package collectReq
 
 import (
 	"fmt"
-	"juejinCollections/dal"
 	"juejinCollections/logger"
 	"juejinCollections/model"
 	"juejinCollections/tool"
@@ -25,23 +24,10 @@ func NewAction(userId string) *Action {
 }
 
 func (ac *Action) Run() {
-	var err error
-
 	startTime := time.Now()
-
-	err = dal.DbDal.OpenWal()
-	if err != nil {
-		tool.ShowErr(err)
-		return
-	}
 
 	ac.start()
 	ac.wg.Wait()
-
-	err = dal.DbDal.CloseWal()
-	if err != nil {
-		tool.ShowErr(err)
-	}
 
 	endTime := time.Now()
 	latencyTime := endTime.Sub(startTime)
