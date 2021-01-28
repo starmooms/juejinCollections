@@ -7,10 +7,10 @@ import (
 )
 
 var Config = struct {
-	Debug  bool   `default:"false"`
-	Host   string `default:"localhost"`
-	Port   int    `default:"8014"`
-	DbFile string `default:"./main.db"`
+	IsDebug bool   `default:"false" yaml:"isDebug"` // gopkg.in/yaml.v2 只支持小写字母，如果要在yaml文件中使用大写字母，则必须在结构中声明yaml
+	Host    string `default:"localhost"`
+	Port    int    `default:"8014"`
+	DbFile  string `default:"./main.db" yaml:"dbFile"`
 }{}
 
 func init() {

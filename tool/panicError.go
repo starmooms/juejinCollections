@@ -7,7 +7,7 @@ import (
 	"github.com/cockroachdb/errors"
 )
 
-var logs = logger.GetLog()
+var logs = logger.Logger
 
 func PanicErr(err error) {
 	if err != nil {

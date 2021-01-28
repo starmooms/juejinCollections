@@ -15,7 +15,7 @@ type DalLog struct {
 
 func DalLogNew() log.Logger {
 	daLog := &DalLog{
-		logCtx:   logger.GetLog(),
+		logCtx:   logger.Logger,
 		logLevel: log.LOG_WARNING,
 	}
 	daLog.CheckLevel()

@@ -2,6 +2,7 @@ package collectReq
 
 import (
 	"fmt"
+	"juejinCollections/dal"
 	"juejinCollections/logger"
 	"juejinCollections/model"
 	"juejinCollections/tool"
@@ -26,8 +27,18 @@ func NewAction(userId string) *Action {
 func (ac *Action) Run() {
 	startTime := time.Now()
 
+	err := dal.DbDal.OpenWal()
+	if err != nil {
+		tool.ShowErr(err)
+	}
+
 	ac.start()
 	ac.wg.Wait()
+
+	err = dal.DbDal.CloseWal()
+	if err != nil {
+		tool.ShowErr(err)
+	}
 
 	endTime := time.Now()
 	latencyTime := endTime.Sub(startTime)
@@ -86,7 +97,7 @@ func (ac *Action) saveCollectData(tagId string) {
 }
 
 // 保存文章图片
-func (ac *Action) saveArticleImg(m *model.ArticleModel) {
+func (ac *Action) saveArticleImg(m *model.Article) {
 	if m == nil {
 		return
 	}
@@ -115,7 +126,7 @@ func (ac *Action) saveArticleImg(m *model.ArticleModel) {
 		c := i
 		ac.wg.Add(func() {
 			url := fmt.Sprintf("http://localhost:8012/%s/%d", m.ArticleId, c)
-			logger.Logger.Warn(url)
+			logger.GetLog().Warn(url)
 			err := GetImageData(url, m.ArticleId)
 			if err != nil {
 				tool.ShowErr(errors.Wrap(err, "Get image Request Error"))

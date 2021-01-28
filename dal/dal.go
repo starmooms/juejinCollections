@@ -114,7 +114,7 @@ func insertOrUpdate(mainField, noUpdateField []string, valList interface{}, wher
 }
 
 // 添加收藏列表
-func AddTags(list *[]model.TagModel) (sql.Result, error) {
+func AddTags(list *[]model.Tag) (sql.Result, error) {
 	main := []string{"Id"}
 	noUpdate := []string{"CreateTime"}
 	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, list)
@@ -122,7 +122,7 @@ func AddTags(list *[]model.TagModel) (sql.Result, error) {
 }
 
 // 添加文章
-func AddArticle(article *[]*model.ArticleModel) (sql.Result, error) {
+func AddArticle(article *[]*model.Article) (sql.Result, error) {
 	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, article)
 	main := []string{"ArticleId"}
 	noUpdate := []string{"CreateTime"}
@@ -132,7 +132,7 @@ func AddArticle(article *[]*model.ArticleModel) (sql.Result, error) {
 }
 
 // 添加收藏与文章关联id
-func AddTagArticle(tagArticle *[]*model.TagArticleModel) (sql.Result, error) {
+func AddTagArticle(tagArticle *[]*model.TagArticleId) (sql.Result, error) {
 	tool.SetTimeFile([]string{"CreateTime", "UpdateTime"}, tagArticle)
 	main := []string{"TagId", "ArticleId"}
 	noUpdate := []string{"CreateTime"}
@@ -165,5 +165,18 @@ func AddImage(image *model.Image) (int64, error) {
 
 // 获取图片
 func GetImage(image *model.Image) (bool, error) {
-	return DbDal.Engine.Get(image)
+	has, err := DbDal.Engine.Get(image)
+	if err != nil {
+		return false, errors.Wrap(err, "GetImage Err")
+	}
+	return has, err
+}
+
+// Get 包装错误
+func Get(bean interface{}) (bool, error) {
+	has, err := DbDal.Engine.Get(bean)
+	if err != nil {
+		return false, errors.Wrap(err, "db Err")
+	}
+	return has, err
 }

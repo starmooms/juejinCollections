@@ -34,7 +34,7 @@ func (r *ResCursor) HasMore() bool {
 type CollectListStruct struct {
 	ResBase
 	ResCursor
-	Data []model.TagModel `json:"data"`
+	Data []model.Tag `json:"data"`
 }
 
 // 请求文章返回

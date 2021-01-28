@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var log = logger.GetLog()
+var log = logger.Logger
 
 var requestWrap = &httpRequest.RequestWarp{}
 var request = requestWrap.GetNewRequest
@@ -54,7 +54,7 @@ func Run() {
 }
 
 // 获取收藏列表
-func GetTagList(userId string) (_ *[]model.TagModel, err error) {
+func GetTagList(userId string) (_ *[]model.Tag, err error) {
 	reqCollectList := &CollectListStruct{}
 	httpReq, err := request(&httpRequest.HttpRequest{
 		Url:    GET_TAGSLIST,
@@ -112,12 +112,12 @@ func GetArticle(id string) (err error) {
 		return tool.BackError(err)
 	}
 
-	article := &model.ArticleModel{}
+	article := &model.Article{}
 	if err = json.Unmarshal(articleByt, article); err != nil {
 		return tool.BackError(err)
 	}
 
-	_, err = dal.AddArticle(&[]*model.ArticleModel{article})
+	_, err = dal.AddArticle(&[]*model.Article{article})
 	if err != nil {
 		return tool.BackError(err)
 	}
@@ -125,7 +125,7 @@ func GetArticle(id string) (err error) {
 }
 
 // 获取收藏内容
-func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.ArticleModel, err error) {
+func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.Article, err error) {
 	collectData = &CollectArticle{}
 
 	httpReq, err := request(&httpRequest.HttpRequest{
@@ -146,8 +146,8 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 		return
 	}
 
-	articleList := []*model.ArticleModel{}
-	tagArticle := []*model.TagArticleModel{}
+	articleList := []*model.Article{}
+	tagArticle := []*model.TagArticleId{}
 	var jsonErr *error = nil
 	_, err = jsonparser.ArrayEach(*result.Data, func(value []byte, dataType jsonparser.ValueType, offset int, eachErr error) {
 		if jsonErr != nil {
@@ -160,7 +160,7 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 			return
 		}
 
-		artItem := &model.ArticleModel{}
+		artItem := &model.Article{}
 		err = json.Unmarshal(artByt, artItem)
 		if err != nil {
 			err = errors.Wrap(err, "ArrayEach Get 'article Unmarshal' Error")
@@ -169,7 +169,7 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 		}
 
 		articleList = append(articleList, artItem)
-		tagArticle = append(tagArticle, &model.TagArticleModel{
+		tagArticle = append(tagArticle, &model.TagArticleId{
 			TagId:     tagId,
 			ArticleId: artItem.ArticleId,
 		})

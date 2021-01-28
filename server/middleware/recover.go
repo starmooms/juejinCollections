@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"juejinCollections/logger"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -13,10 +12,10 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
-func Recovery() gin.HandlerFunc {
-	log := logger.GetLog()
+func Recovery(log *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if rErr := recover(); rErr != nil {

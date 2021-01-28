@@ -16,16 +16,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func Request(method string, url string, params *gin.H) *HttpRequest {
-// 	method = strings.ToUpper(method)
-// 	return &HttpRequest{
-// 		method: method,
-// 		url:    url,
-// 		params: params,
-// 	}
-// }
-
 var log = logger.Logger
+var isDebug = config.Config.IsDebug
 
 type HttpRequest struct {
 	Url     string
@@ -131,7 +123,7 @@ func (h *HttpRequest) DoRequest() (data *ResData, err error) {
 		return nil, err
 	}
 
-	if config.Config.Debug {
+	if isDebug {
 		h.PrintReq(false)
 	}
 	return data, err

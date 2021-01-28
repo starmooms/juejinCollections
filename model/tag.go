@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type TagModel struct {
+type Tag struct {
 	Id               uint      `json:"id" xorm:"'id' pk notnull unique"`
 	TagId            string    `json:"tag_id" xorm:"index notnull unique"`
 	TagName          string    `json:"tag_name" xorm:"index notnull"`
@@ -22,6 +22,6 @@ type TagModel struct {
 	UpdateTime       time.Time `json:"update_time" xorm:"updated"`
 }
 
-func (m *TagModel) TableName() string {
+func (m *Tag) TableName() string {
 	return "tags"
 }

@@ -1,14 +1,13 @@
 package middleware
 
 import (
-	"juejinCollections/logger"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
-func Logger() gin.HandlerFunc {
-	log := logger.GetLog()
+func Logger(log *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
 		startTime := time.Now()

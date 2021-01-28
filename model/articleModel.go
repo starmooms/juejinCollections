@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type ArticleModel struct {
+type Article struct {
 	ArticleId      string    `json:"article_id" xorm:"pk notnull unique"`
 	AuditStatus    int       `json:"audit_status"`
 	BriefContent   string    `json:"brief_content"`
@@ -23,6 +23,6 @@ type ArticleModel struct {
 	UpdateTime     time.Time `json:"update_time"`
 }
 
-func (m *ArticleModel) TableName() string {
+func (m *Article) TableName() string {
 	return "articles"
 }
