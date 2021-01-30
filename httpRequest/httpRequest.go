@@ -123,9 +123,9 @@ func (h *HttpRequest) DoRequest() (data *ResData, err error) {
 		return nil, err
 	}
 
-	if isDebug {
-		h.PrintReq(false)
-	}
+	// if isDebug {
+	// 	h.PrintReq(false)
+	// }
 	return data, err
 }
 

@@ -50,6 +50,9 @@ func GetArticle(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, &gin.H{
-		"article": article,
+		"status": true,
+		"data": &gin.H{
+			"article": article,
+		},
 	})
 }

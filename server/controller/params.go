@@ -62,5 +62,4 @@ func init() {
 
 type GetArticleParams struct {
 	ArticleId string `form:"articleId" json:"articleId" binding:"required"`
-	Id        string `form:"id" json:"id" binding:"required"`
 }

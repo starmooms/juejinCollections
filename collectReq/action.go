@@ -1,7 +1,6 @@
 package collectReq
 
 import (
-	"fmt"
 	"juejinCollections/dal"
 	"juejinCollections/logger"
 	"juejinCollections/model"
@@ -13,8 +12,9 @@ import (
 )
 
 type Action struct {
-	wg     *tool.WaitGroup
-	UserId string
+	wg          *tool.WaitGroup
+	UserId      string
+	DbArticleId []string
 }
 
 func NewAction(userId string) *Action {
@@ -60,6 +60,37 @@ func (ac *Action) Run() {
 }
 
 func (ac *Action) start() {
+	if len(ac.DbArticleId) > 0 {
+		ac.refreshDbArticleImg()
+	} else {
+		ac.getAllCollect()
+	}
+}
+
+// 根据文章Id在本地数据库查找文章，更新图片
+func (ac *Action) refreshDbArticleImg() {
+	ac.wg.Add(func() {
+		for _, articleId := range ac.DbArticleId {
+			article := &model.Article{
+				ArticleId: articleId,
+			}
+			ac.wg.Add(func() {
+				has, err := dal.Get(article)
+				if err != nil {
+					tool.ShowErr(err)
+					return
+				} else if !has {
+					tool.ShowErr(errors.New(article.ArticleId + "Not Found In Db"))
+					return
+				}
+				ac.saveArticleImg(article)
+			})
+		}
+	})
+}
+
+// 请求收藏列表，获取全部文章
+func (ac *Action) getAllCollect() {
 	ac.wg.Add(func() {
 		tagList, err := GetTagList(ac.UserId)
 		if err != nil {
@@ -119,29 +150,43 @@ func (ac *Action) saveArticleImg(m *model.Article) {
 		imageResult = reg.FindAllStringSubmatch(m.Content, -1)
 	}
 
-	if len(imageResult) > 2 {
-		fmt.Println("..")
-	}
-	for i := 0; i < 100; i++ {
-		c := i
-		ac.wg.Add(func() {
-			url := fmt.Sprintf("http://localhost:8012/%s/%d", m.ArticleId, c)
-			logger.GetLog().Warn(url)
-			err := GetImageData(url, m.ArticleId)
-			if err != nil {
-				tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
-			}
-		})
-	}
-
 	// for _, rItem := range imageResult {
 	// 	if len(rItem) >= 2 {
-	// 		ac.wg.Add(func() {
-	// 			err := GetImageData(rItem[1], m.ArticleId)
-	// 			if err != nil {
-	// 				tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
-	// 			}
-	// 		})
+	// 		logger.Logger.Warn(rItem[1], m.ArticleId)
+	// 		// ac.wg.Add(func() {
+	// 		// 	err := GetImageData(rItem[1], m.ArticleId)
+	// 		// 	if err != nil {
+	// 		// 		tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+	// 		// 	}
+	// 		// })
 	// 	}
 	// }
+
+	// if len(imageResult) > 2 {
+	// 	fmt.Println("..")
+	// }
+	// for i := 0; i < 100; i++ {
+	// 	c := i
+	// 	ac.wg.Add(func() {
+	// 		url := fmt.Sprintf("http://localhost:8012/%s/%d", m.ArticleId, c)
+	// 		logger.GetLog().Warn(url)
+	// 		err := GetImageData(url, m.ArticleId)
+	// 		if err != nil {
+	// 			tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+	// 		}
+	// 	})
+	// }
+
+	for _, rItem := range imageResult {
+		if len(rItem) >= 2 {
+			imgUrl := rItem[1]
+			ac.wg.Add(func() {
+				log.Warn(imgUrl)
+				err := GetImageData(imgUrl, m.ArticleId)
+				if err != nil {
+					tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+				}
+			})
+		}
+	}
 }

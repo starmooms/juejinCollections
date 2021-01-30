@@ -49,8 +49,9 @@ func init() {
 }
 
 func Run() {
-	ac := NewAction("1116759544852221")
-	ac.Run()
+	// ac := NewAction("1116759544852221")
+	// ac.DbArticleId = []string{"6844903480126078989"}
+	// ac.Run()
 }
 
 // 获取收藏列表
