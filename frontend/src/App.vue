@@ -1,18 +1,25 @@
 <template>
   <template v-if="article">
-    <div style="width: 700px; margin: 0 auto">
+    <div
+      class="article-container markdown-body"
+      :class="{ 'is-markdown': article.isMarkdown }"
+      ref="article"
+      style="width: 700px; margin: 0 auto"
+    >
       <h1>{{ article.title }}</h1>
-      <p v-if="article.mark_content">dd</p>
-      <VueMarkdown v-if="article.mark_content">{{
-        article.mark_content
-      }}</VueMarkdown>
-      <article class="markdown-body" v-html="article.content"></article>
+      <VueMarkdown v-if="article.mark_content">
+        {{ article.mark_content }}
+      </VueMarkdown>
+      <article v-html="article.content"></article>
     </div>
   </template>
 </template>
 
 <script lang="ts">
 import VueMarkdown from "./components/vueMarkdown";
+// import hljs from 'highlight.js';
+import prismjs from "prismjs"
+
 
 export default {
   name: "App",
@@ -26,13 +33,15 @@ export default {
   },
   methods: {
     async getArticle() {
-      const response = await fetch("/api/getArticle?articleId=6844903974378668039", {
+      // 6844904178075058189 6844903974378668039
+      const response = await fetch("/api/getArticle?articleId=6844904178075058189", {
         method: 'GET'
       })
       const result = await response.json()
       if (result.status) {
         let article = result.data.article
         let articleId = article.article_id
+        article.isMarkdown = !!article.mark_content
         let replaceImgStr = (...args) => {
           if (args.length >= 4) {
             return `${args[1]}//localhost:8012/images/article/${articleId}?url=${encodeURIComponent(args[2])}${args[3]}`
@@ -40,21 +49,47 @@ export default {
           return args[0]
         }
 
-        if (article.mark_content) {
+        if (article.isMarkdown) {
           article.mark_content = article.mark_content.replace(/(\!\[.*?\]\()(http\S+)(.*?\))/g, replaceImgStr)
-        } else if (article.content) {
+        } else {
           article.content = article.content.replace(/(<img.*?src=")(http.*?)(".*?>)/g, replaceImgStr)
         }
         this.article = article
-      }
 
-      // console.log(response)
+        setTimeout(() => {
+          const el = this.$refs.article
+          if (el) {
+            let list = el.querySelectorAll("pre > code")
+            console.log(list)
+            list.forEach(element => {
+              console.log(element)
+              if (element.classList.length === 0) {
+                element.classList.add("language-text")
+              }
+            });
+            prismjs.highlightAllUnder(this.$refs.article)
+          }
+          // prismjs.hooks.add("before-sanity-check", (data) => {
+          //   if (data.language === 'none') {
+          //     data.language = "js"
+          //     console.log(data.language)
+          //   }
+          // })
+
+        })
+        // setTimeout(() => {
+        //   Promise.resolve().then(() => {
+        //     hljs.initHighlighting();
+        //   })
+        // })
+      }
     }
   },
   mounted() {
     this.getArticle().then(() => {
       console.log(this.article)
     })
+
     // (async () => {
     //   // const data = await fetch("/api/getArticle?a=2", {
     //   //   method: 'POST',
@@ -71,8 +106,24 @@ export default {
 };
 </script>
 
-<style>
-.markdown-body {
+
+
+<style lang="less">
+// .article-container {
+//   code {
+//     color: #505050;
+//     padding: 0.25rem 0.5rem;
+//     margin: 0;
+//     font-size: 0.85em;
+//     background-color: var(--code-color);
+//     border-radius: 3px;
+//   }
+
+//   .hljs {
+//     font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+//   }
+// }
+/* .markdown-body {
   word-break: break-word;
   line-height: 1.75;
   font-weight: 400;
@@ -246,8 +297,8 @@ export default {
 .markdown-body pre > code.hljs {
   color: #333;
   background: #f8f8f8;
-}
-.hljs-comment,
+} */
+/* .hljs-comment,
 .hljs-quote {
   color: #998;
   font-style: italic;
@@ -316,5 +367,5 @@ export default {
 }
 .hljs-strong {
   font-weight: 700;
-}
+} */
 </style>

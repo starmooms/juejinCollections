@@ -20,7 +20,7 @@ func SetRoute(r *gin.Engine) {
 		}
 	})
 
-	r.Static("/_assets", "frontend/dist/_assets")
+	r.Static("/assets", "frontend/dist/assets")
 	r.StaticFile("/favicon.ico", "frontend/dist/favicon.ico")
 
 	imageGroup := r.Group("/images")

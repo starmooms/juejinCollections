@@ -5,7 +5,6 @@ const oldRender = vueMarkdown.render
 vueMarkdown.render = function () {
   let restul = null
   oldRender.call(this, (...args) => {
-    console.log(args)
     restul = h(args[0], {
       innerHTML: args[1].domProps.innerHTML
     })
