@@ -3,20 +3,25 @@
 @import "./style/tomorrow-theme.css";
 
 .article-container.is-markdown {
-  code {
-    // color: #ccc;
-    margin: 0;
-    font-size: 0.85em;
+  code[class*="language-"],
+  pre[class*="language-"]  {
+    font-size: 14px;
+    line-height: 1.6;
   }
-  pre, pre[class*=language]{
-    padding: 0;
-    line-height:1.4;
-    padding: 16px;
-    margin:.85rem 0;
-    background-color:#282c34;
-    border-radius:6px;
-    overflow:auto;
-  }
+  // code {
+  //   // color: #ccc;
+  //   margin: 0;
+  //   font-size: 0.85em;
+  // }
+  // pre, pre[class*=language]{
+  //   padding: 0;
+  //   line-height:1.4;
+  //   padding: 16px;
+  //   margin:.85rem 0;
+  //   background-color:#282c34;
+  //   border-radius:6px;
+  //   overflow:auto;
+  // }
     
   .hljs {
     font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;

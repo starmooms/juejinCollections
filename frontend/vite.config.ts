@@ -8,6 +8,9 @@ const config: vite.UserConfig = {
       '/api': "http://localhost:8012"
     },
   },
+  // optimizeDeps: {
+  //   include: ['prismjs/plugins/line-numbers/prism-line-numbers.min']
+  // },
   plugins: [vue()]
 }
 
