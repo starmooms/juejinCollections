@@ -3,6 +3,7 @@ interface fetchOpts extends RequestInit {
   params?: Record<any, any>
   parseJson?: boolean
 }
+type middleFun = (config: fetchOpts, next: () => Promise<ReturnType<FetchRequest['request']>>) => unknown
 
 interface Opts {
   baseUrl: string
@@ -12,6 +13,7 @@ export default class FetchRequest {
   opts: Opts = {
     baseUrl: ""
   }
+  middleware: middleFun[] = []
 
   constructor(opts: Partial<Opts> = {}) {
     this.opts = { ...opts, ...this.opts }
@@ -51,12 +53,23 @@ export default class FetchRequest {
       url = `${baseUrl}${url}`
     }
 
+    let next: any = () => this.request(url, opts)
+    let middleList = [...this.middleware]
+    for (let i = middleList.length - 1; i >= 0; i--) {
+      const fn = middleList[i]
+      const lastNext = next
+      next = () => Promise.resolve(fn(opts, lastNext))
+    }
+
+    return next()
+  }
+
+  private async request<T = any>(url: string, opts: fetchOpts) {
     const response = await fetch(url, opts)
     let data!: T
     if (opts.parseJson !== false) {
       data = await response.clone().json()
     }
-
     return {
       response,
       data
