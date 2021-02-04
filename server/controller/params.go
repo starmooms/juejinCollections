@@ -52,7 +52,10 @@ func ValidatorTranslator() {
 func BackParamsErr(c *gin.Context, err error) {
 	if err != nil {
 		errs := err.(validator.ValidationErrors)[0]
-		c.JSON(http.StatusBadRequest, gin.H{"error": errs.Translate(trans)})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": false,
+			"msg":    errs.Translate(trans),
+		})
 	}
 }
 

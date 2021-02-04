@@ -3,6 +3,7 @@ package server
 import (
 	"juejinCollections/server/controller"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +11,9 @@ import (
 func SetRoute(r *gin.Engine) {
 	r.LoadHTMLGlob("frontend/dist/*.html")
 	r.NoRoute(func(c *gin.Context) {
-		if c.Request.Method == "GET" {
+		s := strings.ToUpper(c.Request.Header.Get("X-Requested-With"))
+		isXhr := s == "XMLHTTPREQUEST"
+		if c.Request.Method == "GET" && !isXhr {
 			c.HTML(http.StatusOK, "index.html", gin.H{})
 		} else {
 			c.JSON(http.StatusNotFound, gin.H{
