@@ -68,6 +68,8 @@ export default defineComponent<any, any, Data>({
     this.getArticle().then(() => {
       console.log(this.article)
     })
+    this.$message("gdbffdgfdgfdgdf")
+    this.$message("gdbffdgfdgfdgdf")
   }
 });
 </script>

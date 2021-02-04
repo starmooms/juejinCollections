@@ -2,25 +2,77 @@
 interface fetchOpts extends RequestInit {
   params?: Record<any, any>
   parseJson?: boolean
+  baseUrl?: string
 }
-type middleFun = (config: fetchOpts, next: () => Promise<ReturnType<FetchRequest['request']>>) => unknown
 
-interface Opts {
-  baseUrl: string
-}
+// // ReturnType
+// interface Callable<R> {
+//   (...args: any[]): R;
+// }
+// type GenericReturnType<R, X> = X extends Callable<R> ? R : never;
+type PromiseResolved<T> = T extends Promise<infer R> ? R : never;
+type ReturnedPromiseResolvedType<T extends (...args: any) => any> = PromiseResolved<ReturnType<T>>
+
+
+type fetchRetureP = ReturnedPromiseResolvedType<FetchRequest['request']>
+interface fetchReture<T> extends fetchRetureP {
+  data: T
+};
+type fetchProperty<T> = {
+  config: fetchOpts
+  response?: fetchReture<T>
+  reject?: Error
+};
+
+type middleFun<T = any> = (property: fetchProperty<T>, next: () => Promise<void>) => Promise<any>
+
+
 
 export default class FetchRequest {
-  opts: Opts = {
-    baseUrl: ""
-  }
-  middleware: middleFun[] = []
 
-  constructor(opts: Partial<Opts> = {}) {
-    this.opts = { ...opts, ...this.opts }
+  middleware: middleFun[] = []
+  defaultOpts: fetchOpts = {}
+
+  constructor(opts: fetchOpts = {}) {
+    this.defaultOpts = { ...this.defaultOpts, ...opts }
+  }
+
+  use(fun: middleFun) {
+    this.middleware.push(fun)
   }
 
   async fetch<T = any>(url: string, userOpts?: fetchOpts) {
-    let opts: fetchOpts = { ...userOpts }
+    let opts: fetchOpts = { ...this.defaultOpts, ...userOpts }
+    let property: fetchProperty<T> = {
+      config: opts
+    }
+
+    let isEmit = false
+    let next = async () => {
+      property.response = await this.request<T>(url, opts)
+      isEmit = true
+    }
+    let middleList = [...this.middleware]
+    for (let i = middleList.length - 1; i >= 0; i--) {
+      const fn = middleList[i]
+      const lastNext = next
+      next = () => fn(property, lastNext)
+    }
+
+    return new Promise<fetchReture<T>>(async (resolve, reject) => {
+      await next()
+      if (!isEmit && !property.response) {
+        throw new Error("no Emit fetch, check middle has use and await next?")
+      }
+      if (property.response) {
+        resolve(property.response)
+      } else {
+        throw new Error("no response")
+      }
+    })
+  }
+
+  private async request<T = any>(url: string, opts: fetchOpts) {
     let method = opts.method ? opts.method.toLocaleUpperCase() : 'GET'
     opts.method = method
 
@@ -48,26 +100,15 @@ export default class FetchRequest {
       }
     }
 
-    let baseUrl = this.opts.baseUrl
+    let baseUrl = opts.baseUrl
     if (baseUrl) {
       url = `${baseUrl}${url}`
     }
 
-    let next: any = () => this.request(url, opts)
-    let middleList = [...this.middleware]
-    for (let i = middleList.length - 1; i >= 0; i--) {
-      const fn = middleList[i]
-      const lastNext = next
-      next = () => Promise.resolve(fn(opts, lastNext))
-    }
-
-    return next()
-  }
-
-  private async request<T = any>(url: string, opts: fetchOpts) {
     const response = await fetch(url, opts)
     let data!: T
-    if (opts.parseJson !== false) {
+    let type = response.headers.get('content-type')?.toLocaleLowerCase() || ""
+    if (opts.parseJson !== false && type.indexOf("application/json") >= 0) {
       data = await response.clone().json()
     }
     return {

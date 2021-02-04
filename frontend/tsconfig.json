@@ -9,6 +9,7 @@
     "dist"
   ],
   "compilerOptions": {
+    "jsx": "preserve",
     "module": "es2015",
     "moduleResolution": "node",
     "target": "es2015",

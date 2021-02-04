@@ -1,5 +1,6 @@
 import vite from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from "@vitejs/plugin-vue-jsx"
 
 const config: vite.UserConfig = {
   base: "/",
@@ -11,7 +12,7 @@ const config: vite.UserConfig = {
   // optimizeDeps: {
   //   include: ['prismjs/plugins/line-numbers/prism-line-numbers.min']
   // },
-  plugins: [vue()]
+  plugins: [vueJsx(), vue()]
 }
 
 export default config
