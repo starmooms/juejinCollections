@@ -74,7 +74,7 @@ func (d *Dal) GetMode(engine *xorm.Engine) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "get journal_mode error")
 	}
-	logs.Error(v)
+	logs.Debug("get journal_mode is ", v)
 	return v[0]["journal_mode"], nil
 }
 

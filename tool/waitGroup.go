@@ -23,9 +23,12 @@ func NewWaitGroup(limt int) *WaitGroup {
 func (w *WaitGroup) Add(cb ...func()) {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
+	newTaskLen := len(cb)
 	w.taskList = append(w.taskList, cb...)
-	if w.runNum < w.limt {
+
+	for w.runNum < w.limt && newTaskLen > 0 {
 		w.runNum += 1
+		newTaskLen -= 1
 		w.wg.Add(1)
 		go w.startTask(w.runNum)
 	}

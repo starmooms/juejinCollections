@@ -8,6 +8,13 @@
       "mode": "auto",
       "program": "${workspaceRoot}",
       "args": [],
+      "dlvLoadConfig": {
+        "followPointers": true,
+        "maxStringLen": 512, //字符串最大长度
+        "maxArrayValues": 2000, // 数组最大长度
+        "maxVariableRecurse": 1,
+        "maxStructFields": -1
+      }
       //"showLog": true
     }
   ]

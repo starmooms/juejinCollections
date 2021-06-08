@@ -11,16 +11,20 @@ import (
 func SetRoute(r *gin.Engine) {
 	r.LoadHTMLGlob("frontend/dist/*.html")
 	r.NoRoute(func(c *gin.Context) {
-		s := strings.ToUpper(c.Request.Header.Get("X-Requested-With"))
-		isXhr := s == "XMLHTTPREQUEST"
-		if c.Request.Method == "GET" && !isXhr {
-			c.HTML(http.StatusOK, "index.html", gin.H{})
-		} else {
-			c.JSON(http.StatusNotFound, gin.H{
-				"status": false,
-				"msg":    "NOT FOUND",
-			})
+		if c.Request.Method == "GET" {
+			s := strings.ToUpper(c.Request.Header.Get("X-Requested-With"))
+			isXhr := s == "XMLHTTPREQUEST"
+			if !isXhr {
+				c.HTML(http.StatusOK, "index.html", gin.H{})
+				return
+			}
 		}
+
+		code := http.StatusNotFound
+		c.JSON(code, gin.H{
+			"status": false,
+			"msg":    http.StatusText(code),
+		})
 	})
 
 	r.Static("/assets", "frontend/dist/assets")

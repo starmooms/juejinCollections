@@ -9,6 +9,9 @@
     "dist"
   ],
   "compilerOptions": {
+    "types": [
+      "vite/client"
+    ],
     "jsx": "preserve",
     "module": "es2015",
     "moduleResolution": "node",
@@ -17,5 +20,6 @@
     "allowJs": true,
     "outDir": "./dist",
     "strict": true,
+    "isolatedModules": true
   }
 }
