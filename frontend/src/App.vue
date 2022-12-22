@@ -18,59 +18,74 @@
 <script lang="ts">
 import VueMarkdown from "./components/vueMarkdown";
 // import hljs from 'highlight.js';
-import prismjs from "prismjs"
-import { defineComponent } from "vue";
-import { article } from "./type"
-import "./utils/api.ts"
+import prismjs from "prismjs";
+import { defineComponent, ref } from "vue";
+import { article } from "./type";
+import "./utils/api.ts";
 
 interface Data {
-  article: null | article
+  article: null | article;
 }
 
-export default defineComponent<any, any, Data>({
+export default defineComponent({
   name: "App",
   components: {
     VueMarkdown,
   },
   data(): Data {
     return {
-      article: null
-    }
+      article: null,
+    };
+  },
+  setup() {
+    const numc = ref(0);
+    return { numc };
   },
   methods: {
     async getArticle() {
       // 6844904178075058189 6844903974378668039
-      const response = await fetch("/api/getArticle?articleId=6844903974378668039", {
-        method: 'GET'
-      })
-      const result = await response.json()
+      const response = await fetch(
+        "/api/getArticle?articleId=6844903974378668039",
+        {
+          method: "GET",
+        }
+      );
+      const result = await response.json();
       if (result.status) {
-        let article = result.data.article
-        let articleId = article.article_id
-        article.isMarkdown = !!article.mark_content
+        let article = result.data.article;
+        let articleId = article.article_id;
+        article.isMarkdown = !!article.mark_content;
+
         let replaceImgStr = (...args: string[]) => {
           if (args.length >= 4) {
-            return `${args[1]}//localhost:8012/images/article/${articleId}?url=${encodeURIComponent(args[2])}${args[3]}`
+            // prettier-ignore
+            return `${args[1]}//localhost:8012/images/article/${articleId}?url=${encodeURIComponent(args[2])}${args[3]}`;
           }
-          return args[0]
-        }
+          return args[0];
+        };
 
         if (article.isMarkdown) {
-          article.mark_content = article.mark_content.replace(/(\!\[.*?\]\()(http\S+)(.*?\))/g, replaceImgStr)
+          article.mark_content = article.mark_content.replace(
+            /(\!\[.*?\]\()(http\S+)(.*?\))/g,
+            replaceImgStr
+          );
         } else {
-          article.content = article.content.replace(/(<img.*?src=")(http.*?)(".*?>)/g, replaceImgStr)
+          article.content = article.content.replace(
+            /(<img.*?src=")(http.*?)(".*?>)/g,
+            replaceImgStr
+          );
         }
-        this.article = article
+        this.article = article;
       }
-    }
+    },
   },
   mounted() {
     this.getArticle().then(() => {
-      console.log(this.article)
-    })
-    this.$message("gdbffdgfdgfdgdf")
-    this.$message("gdbffdgfdgfdgdf")
-  }
+      console.log(this.article);
+    });
+    this.$message("gdbffdgfdgfdgdf");
+    this.$message("gdbffdgfdgfdgdf");
+  },
 });
 </script>
 

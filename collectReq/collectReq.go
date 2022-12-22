@@ -21,7 +21,7 @@ var request = requestWrap.GetNewRequest
 var imgRequestWrap = &httpRequest.RequestWarp{}
 var imgRequest = imgRequestWrap.GetNewRequest
 
-var userMock = true
+var userMock = false
 
 func init() {
 	if userMock {
