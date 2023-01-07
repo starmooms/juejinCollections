@@ -1,3 +1,4 @@
+import { Article } from "../type"
 import FetchRequest from "./FetchRequest"
 
 const request = new FetchRequest()
@@ -22,7 +23,7 @@ request.use(async (ctx, next) => {
       ctx.response = {
         data: {
           status: false,
-          msg: `Other Err: ${err.message}`,
+          msg: `Other Err: ${(err as any)?.message}`,
           err: err
         }
       } as never
@@ -38,22 +39,9 @@ request.use((ctx, next) => {
   return next()
 })
 
-const getArticle = async (params: any) => {
-  const { response, data } = await request.fetch("/api/getArticle", {
+export const getArticle = async (params: any) => {
+  return await request.fetch<{ article: Article }>("/api/getArticle", {
     params: params,
     method: "GET"
   })
-  console.log(response, data)
-  return response
 }
-
-getArticle({
-  articleId: ""
-})
-
-document.addEventListener("click", () => {
-  getArticle({
-    articleId: "684490397437866803923"
-  })
-
-})

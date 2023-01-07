@@ -1,4 +1,4 @@
-export interface article {
+export interface Article {
   article_id: string
   audit_status: number
   brief_content: string
@@ -17,5 +17,4 @@ export interface article {
   title: string
   update_time: string
   user_id: string
-
 }

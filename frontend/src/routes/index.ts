@@ -1,7 +1,16 @@
-// import VueRouter from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 
-// const router = new VueRouter({
-//   // routes: [
-//   //   { path: '/article/:id', component: User }
-//   // ]
-// })
+const router = createRouter({
+  history: createWebHistory(),
+  // routes: [],
+  routes: [
+    {
+      path: '/article/:articleId',
+      component: () => import('../views/Article.vue')
+    }
+  ]
+})
+
+export {
+  router
+}

@@ -1,3 +1,4 @@
+import Message from "../components/Message";
 
 interface fetchOpts extends RequestInit {
   params?: Record<any, any>
@@ -16,7 +17,7 @@ type ReturnedPromiseResolvedType<T extends (...args: any) => any> = PromiseResol
 
 type fetchRetureP = ReturnedPromiseResolvedType<FetchRequest['request']>
 interface fetchReture<T> extends fetchRetureP {
-  data: T
+  data: ResponseData<T>
 };
 type fetchProperty<T> = {
   config: fetchOpts
@@ -25,6 +26,23 @@ type fetchProperty<T> = {
 };
 
 type middleFun<T = any> = (property: fetchProperty<T>, next: () => Promise<void>) => Promise<any>
+
+type ResponseData<T = any> = {
+  status: boolean
+  data: T
+  msg: string;
+}
+
+class ApiError extends Error {
+  response: Response
+  data: ResponseData
+
+  constructor(msg: string, data: ResponseData, response: Response) {
+    super(msg)
+    this.response = response
+    this.data = data
+  }
+}
 
 
 
@@ -106,11 +124,17 @@ export default class FetchRequest {
     }
 
     const response = await fetch(url, opts)
-    let data!: T
+    let data!: ResponseData<T>
     let type = response.headers.get('content-type')?.toLocaleLowerCase() || ""
     if (opts.parseJson !== false && type.indexOf("application/json") >= 0) {
       data = await response.clone().json()
     }
+
+    if (!data.status) {
+      Message.msg(JSON.stringify(data))
+      throw new ApiError(`Api Error ${data?.msg || ''}`, data, response)
+    }
+
     return {
       response,
       data

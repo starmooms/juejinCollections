@@ -13,9 +13,9 @@
       "vite/client"
     ],
     "jsx": "preserve",
-    "module": "es2015",
+    "module": "esNext",
     "moduleResolution": "node",
-    "target": "es2015",
+    "target": "esNext",
     "sourceMap": true,
     "allowJs": true,
     "outDir": "./dist",
