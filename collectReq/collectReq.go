@@ -7,6 +7,7 @@ import (
 	"juejinCollections/logger"
 	"juejinCollections/model"
 	"juejinCollections/tool"
+	"strconv"
 
 	"github.com/buger/jsonparser"
 	"github.com/cockroachdb/errors"
@@ -128,13 +129,15 @@ func GetArticle(id string) (err error) {
 // 获取收藏内容
 func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.Article, err error) {
 	collectData = &CollectArticle{}
+	cursorStr := strconv.Itoa(cursor)
 
 	httpReq, err := request(&httpRequest.HttpRequest{
 		Url:    GET_COLLECTDATA,
-		Method: "GET",
+		Method: "POST",
 		Params: &gin.H{
-			"tag_id": tagId,
-			"cursor": cursor,
+			"collection_id": tagId,
+			"cursor":        cursorStr,
+			"limit":         10,
 		},
 		ResJson: collectData,
 	})
@@ -150,6 +153,14 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 	articleList := []*model.Article{}
 	tagArticle := []*model.TagArticleId{}
 	var jsonErr *error = nil
+
+	c, _, _, err := jsonparser.Get(*result.Data, "has_more")
+	if err != nil {
+		log.Info(err)
+	} else {
+		log.Info(c)
+	}
+
 	_, err = jsonparser.ArrayEach(*result.Data, func(value []byte, dataType jsonparser.ValueType, offset int, eachErr error) {
 		if jsonErr != nil {
 			return
@@ -175,7 +186,7 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 			ArticleId: artItem.ArticleId,
 		})
 
-	}, "data", "article_list")
+	}, "data", "articles")
 
 	if err == nil && jsonErr != nil {
 		err = *jsonErr

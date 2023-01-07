@@ -21,9 +21,9 @@ func (r *ResBase) CheckErr() error {
 
 // 分页列表
 type ResCursor struct {
-	Cursor   string `json:"cursor"`
-	Count    int    `json:"count"`
-	Has_more bool   `json:"has_more"`
+	Cursor string `json:"cursor"`
+	// Count    int    `json:"count"`
+	Has_more bool `json:"has_more"`
 }
 
 func (r *ResCursor) HasMore() bool {

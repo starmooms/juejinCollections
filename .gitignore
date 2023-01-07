@@ -4,6 +4,8 @@
 
 /vendor
 *.db
+*.db-shm
+*.db-wal
 __debug_*
 /logs
 /tmp
