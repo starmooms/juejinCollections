@@ -98,7 +98,7 @@ func (ac *Action) getAllCollect() {
 			return
 		}
 		for _, tagItem := range *tagList {
-			ac.saveCollectData(tagItem.TagId)
+			ac.saveCollectData(tagItem.CollectionId)
 		}
 	})
 }

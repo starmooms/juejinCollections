@@ -50,9 +50,12 @@ func init() {
 }
 
 func Run() {
-	ac := NewAction("1116759544852221")
+	// // 去掉注释开启
+	// ac := NewAction("1116759544852221")
+	// ac.Run()
+
 	// ac.DbArticleId = []string{"6844903480126078989"}
-	ac.Run()
+	// ac.Run()
 }
 
 // 获取收藏列表
@@ -60,11 +63,12 @@ func GetTagList(userId string) (_ *[]model.Tag, err error) {
 	reqCollectList := &CollectListStruct{}
 	httpReq, err := request(&httpRequest.HttpRequest{
 		Url:    GET_TAGSLIST,
-		Method: "GET",
+		Method: "POST",
 		Params: &gin.H{
-			"user_id": userId,
-			"cursor":  0,
-			"limit":   200,
+			"article_id": "",
+			"user_id":    userId,
+			"cursor":     "0",
+			"limit":      200,
 		},
 		ResJson: reqCollectList,
 	})

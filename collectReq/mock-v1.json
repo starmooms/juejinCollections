@@ -1,0 +1,212 @@
+{
+  "tags": {
+    "err_no": 0,
+    "err_msg": "success",
+    "data": [
+      {
+        "id": 3521869,
+        "tag_id": "6906660674944909325",
+        "tag_name": "环境配置",
+        "color": "",
+        "icon": "",
+        "back_ground": "",
+        "ctime": 1608082524,
+        "mtime": 1611223615,
+        "status": 0,
+        "creator_id": 1116759544852221,
+        "user_name": "starmooms",
+        "post_article_count": 1,
+        "concern_user_count": 0,
+        "isfollowed": false,
+        "is_has_in": false
+      },
+      {
+        "id": 3514054,
+        "tag_id": "6902573960622243847",
+        "tag_name": "浏览器",
+        "color": "",
+        "icon": "",
+        "back_ground": "",
+        "ctime": 1607130915,
+        "mtime": 1608689662,
+        "status": 0,
+        "creator_id": 1116759544852221,
+        "user_name": "starmooms",
+        "post_article_count": 2,
+        "concern_user_count": 0,
+        "isfollowed": false,
+        "is_has_in": false
+      }
+    ],
+    "cursor": "20",
+    "count": 0,
+    "has_more": true
+  },
+  "article": {
+    "err_no": 0,
+    "err_msg": "success",
+    "data": {
+      "article_id": "6844904034181070868",
+      "article_info": {
+        "article_id": "6844904034181070869",
+        "user_id": "1838039171859661",
+        "category_id": "6809637767543259184",
+        "tag_ids": [
+          6809640398105870345
+        ],
+        "visible_level": 0,
+        "link_url": "https://juejin.im/post/68449040341810708611",
+        "cover_image": "",
+        "is_gfw": 0,
+        "title": "分不清???",
+        "brief_content": "简介…",
+        "is_english": 0,
+        "is_original": 1,
+        "user_index": 14.095052700293,
+        "original_type": 0,
+        "original_author": "",
+        "content": "<strong>crypto</strong>",
+        "ctime": "1577634481",
+        "mtime": "1600344144",
+        "rtime": "1577675687",
+        "draft_id": "6845076594218762253",
+        "view_count": 44761,
+        "collect_count": 0,
+        "digg_count": 1504,
+        "comment_count": 111,
+        "hot_index": 3853,
+        "is_hot": 0,
+        "rank_index": 0.0045068,
+        "status": 2,
+        "verify_status": 1,
+        "audit_status": 2,
+        "mark_content": ""
+      }
+    }
+  },
+  "collectData": {
+    "err_no": 0,
+    "err_msg": "success",
+    "data": {
+      "article_list": [
+        {
+          "article_id": "1",
+          "article_info": {
+            "article_id": "1",
+            "user_id": "1838039171859661",
+            "category_id": "6809637767543259184",
+            "tag_ids": [
+              6809640398105870345
+            ],
+            "visible_level": 0,
+            "link_url": "https://juejin.im/post/68449040341810708611",
+            "cover_image": "",
+            "is_gfw": 0,
+            "title": "分不清???",
+            "brief_content": "简介…",
+            "is_english": 0,
+            "is_original": 1,
+            "user_index": 14.095052700293,
+            "original_type": 0,
+            "original_author": "",
+            "content": "<p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\">作为一名程序员，开发环境不舒服会很大程度影响开发效率，所以一定要花时间<strong style=\"font-weight: bold; color: #424B5D;\">好好整一下开发环境</strong>（好了，我知道你是在给摸鱼找借口）。</p>\n<figure style=\"margin: 0; margin-top: 10px; margin-bottom: 10px;\" data-tool=\"mdnice编辑器\">\n               <img style=\"display: block; max-width: 100%; border-radius: 5px; margin: 12px auto;\" alt=\"\" src=\"https://user-gold-cdn.xitu.io/2020/6/1/1726f38e4afb7b1d?w=200&h=200&f=png&s=20455\">\n</figure>\n<p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\">最近短短几个月，换了两次新电脑，经历了两次装机（由于各种原因，没法备份恢复，你懂的），每一次都得重新搞一套属于自己的开发环境。</p>\n<p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\">这里就记录一下我是如何一步一步的打造属于自己的 <code style=\"font-size: 14px; word-wrap: break-word; padding: 2px 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; padding-left: 0; padding-right: 0; background: transparent; border-radius: 0; color: #eb6161; border-bottom: 1px solid #eb6161;\">Terminal</code>，你如果想和我一样，直接\n               <code\n               style=\"font-size: 14px; word-wrap: break-word; padding: 2px 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; padding-left: 0; padding-right: 0; background: transparent; border-radius: 0; color: #eb6161; border-bottom: 1px solid #eb6161;\">cv 大法</code>就可以搞一套一样的。</p>\n\n<h2 style=\"padding: 0px; color: black; font-weight: bold; font-size: 20px; margin-top: 24px; margin-bottom: 12px;\" data-tool=\"mdnice编辑器\"><span style=\"display: none;\" class=\"prefix\"></span><span style=\"color: #e7642b; text-align: center; display: block; background-color: #e7642b; color: white; padding: 3px 11px; border-radius: 1px;\" class=\"content\">Terminal</span><span class=\"suffix\"></span></h2>\n\n<p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\"><code style=\"font-size: 14px; word-wrap: break-word; padding: 2px 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; padding-left: 0; padding-right: 0; background: transparent; border-radius: 0; color: #eb6161; border-bottom: 1px solid #eb6161;\">Terminal</code> 我们经常会称作\n               <code\n               style=\"font-size: 14px; word-wrap: break-word; padding: 2px 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; padding-left: 0; padding-right: 0; background: transparent; border-radius: 0; color: #eb6161; border-bottom: 1px solid #eb6161;\">终端</code>，现在中文版的 <code style=\"font-size: 14px; word-wrap: break-word; padding: 2px 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; padding-left: 0; padding-right: 0; background: transparent; border-radius: 0; color: #eb6161; border-bottom: 1px solid #eb6161;\">mac</code> 里也是叫做这个。</p>\n<figure\nstyle=\"margin: 0; margin-top: 10px; margin-bottom: 10px;\" data-tool=\"mdnice编辑器\">\n               <img style=\"display: block; max-width: 100%; border-radius: 5px; margin: 12px auto;\" alt=\"\" src=\"https://user-gold-cdn.xitu.io/2020/6/1/1726f38e523c6083?w=1018&h=510&f=png&s=131590\">\n               </figure>\n               <p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\">我们每天都需要在其中输入很多命令去做一些事情。可以说，每天有大量的时间都需要面对它。</p>\n               <p style=\"padding-top: 8px; padding-bottom: 8px; margin: 0; font-size: 16px; line-height: 26px; word-spacing: 3px; letter-spacing: 1px; color: #424B5D;\" data-tool=\"mdnice编辑器\">我记得我第一次点下鼠标，打开这个终端的时候，看到了这样一个界面：</p>",
+            "ctime": "1577634481",
+            "mtime": "1600344144",
+            "rtime": "1577675687",
+            "draft_id": "6845076594218762253",
+            "view_count": 44761,
+            "collect_count": 0,
+            "digg_count": 1504,
+            "comment_count": 111,
+            "hot_index": 3853,
+            "is_hot": 0,
+            "rank_index": 0.0045068,
+            "status": 2,
+            "verify_status": 1,
+            "audit_status": 2,
+            "mark_content": ""
+          }
+        },
+        {
+          "article_id": "2",
+          "article_info": {
+            "article_id": "2",
+            "user_id": "1838039171859661",
+            "category_id": "6809637767543259184",
+            "tag_ids": [
+              6809640398105870345
+            ],
+            "visible_level": 0,
+            "link_url": "https://juejin.im/post/68449040341810708611",
+            "cover_image": "",
+            "is_gfw": 0,
+            "title": "分不清???",
+            "brief_content": "简介…",
+            "is_english": 0,
+            "is_original": 1,
+            "user_index": 14.095052700293,
+            "original_type": 0,
+            "original_author": "",
+            "content": "<strong>crypto</strong>",
+            "ctime": "1610265043",
+            "mtime": "1611108006",
+            "rtime": "1610265919",
+            "draft_id": "6845076594218762253",
+            "view_count": 44761,
+            "collect_count": 0,
+            "digg_count": 1504,
+            "comment_count": 111,
+            "hot_index": 3853,
+            "is_hot": 0,
+            "rank_index": 0.0045068,
+            "status": 2,
+            "verify_status": 1,
+            "audit_status": 2,
+            "mark_content": "![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8892451daebc49009e94080441b6f66b~tplv-k3u1fbpfcp-zoom-1.image \"image.png\")\r\n"
+          }
+        },
+        {
+          "article_id": "3",
+          "article_info": {
+            "article_id": "3",
+            "user_id": "1838039171859661",
+            "category_id": "6809637767543259184",
+            "tag_ids": [
+              6809640398105870345
+            ],
+            "visible_level": 0,
+            "link_url": "https://juejin.im/post/68449040341810708611",
+            "cover_image": "",
+            "is_gfw": 0,
+            "title": "分不清???",
+            "brief_content": "简介…",
+            "is_english": 0,
+            "is_original": 1,
+            "user_index": 14.095052700293,
+            "original_type": 0,
+            "original_author": "",
+            "content": "<strong>crypto</strong>",
+            "ctime": "1577634481",
+            "mtime": "1600344144",
+            "rtime": "1577675687",
+            "draft_id": "6845076594218762253",
+            "view_count": 44761,
+            "collect_count": 0,
+            "digg_count": 1504,
+            "comment_count": 111,
+            "hot_index": 3853,
+            "is_hot": 0,
+            "rank_index": 0.0045068,
+            "status": 2,
+            "verify_status": 1,
+            "audit_status": 2,
+            "mark_content": ""
+          }
+        }
+      ]
+    },
+    "cursor": "10",
+    "count": 0,
+    "has_more": false
+  }
+}
