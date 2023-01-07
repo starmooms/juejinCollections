@@ -12,15 +12,19 @@ import (
 )
 
 type Action struct {
-	wg          *tool.WaitGroup
-	UserId      string
-	DbArticleId []string
+	wg              *tool.WaitGroup
+	UserId          string
+	DbArticleId     []string
+	requestCount    int
+	newArticleCount int
 }
 
 func NewAction(userId string) *Action {
 	return &Action{
-		UserId: userId,
-		wg:     tool.NewWaitGroup(10),
+		UserId:          userId,
+		wg:              tool.NewWaitGroup(10),
+		requestCount:    0,
+		newArticleCount: 0,
 	}
 }
 
@@ -50,11 +54,15 @@ func (ac *Action) Run() {
 		"start": "%s",
 		"end": "%s",
 		"run": "%v",
+		"requestCount": "%d",
+		"newArticleCount": "%d",
 		"taskTotal": %d
 	}`,
 		sTime,
 		eTime,
 		latencyTime,
+		ac.requestCount,
+		ac.newArticleCount,
 		ac.wg.TaskRunLen,
 	)
 }
@@ -65,6 +73,21 @@ func (ac *Action) start() {
 	} else {
 		ac.getAllCollect()
 	}
+}
+
+// 更新请求数量
+func (ac *Action) addRequestCount(count int) {
+	ac.wg.GetLock(func() {
+		ac.requestCount += count
+		logger.Logger.Infof(`requestCount: %d`, ac.requestCount)
+	})
+}
+
+// 更新新增文章数量
+func (ac *Action) addNewArticleCount(count int) {
+	ac.wg.GetLock(func() {
+		ac.newArticleCount += count
+	})
 }
 
 // 根据文章Id在本地数据库查找文章，更新图片
@@ -93,10 +116,17 @@ func (ac *Action) refreshDbArticleImg() {
 func (ac *Action) getAllCollect() {
 	ac.wg.Add(func() {
 		tagList, err := GetTagList(ac.UserId)
+		ac.addRequestCount(1)
 		if err != nil {
 			tool.ShowErr(err)
 			return
 		}
+
+		if _, err := dal.AddTags(tagList); err != nil {
+			tool.ShowErr(err)
+			return
+		}
+
 		for _, tagItem := range *tagList {
 			ac.saveCollectData(tagItem.CollectionId)
 		}
@@ -110,17 +140,48 @@ func (ac *Action) saveCollectData(tagId string) {
 		collectData.Has_more = true
 		cursor := 0
 
-		for collectData != nil && collectData.HasMore() {
-			newData, articleList, err := GetCollectData(tagId, cursor)
+		hasError := func(err error) bool {
 			if err != nil {
 				tool.ShowErr(errors.Wrapf(err, "SaveCollectData Err At Cursor:%d", cursor))
 				collectData = nil
+				return true
+			}
+			return false
+		}
+
+		for collectData != nil && collectData.HasMore() {
+			newData, allArticleList, tagArticle, err := GetCollectData(tagId, cursor)
+			ac.addRequestCount(1)
+
+			if hasError(err) {
 				return
 			}
 
+			// 只添加不存在的文章
+			newArticleList := []*model.Article{}
+			for _, article := range *allArticleList {
+				has, err := dal.HasArticel(article)
+				if hasError(err) {
+					return
+				}
+				if !has {
+					newArticleList = append(newArticleList, article)
+				}
+			}
+
+			if _, err = dal.AddArticle(&newArticleList); hasError(err) {
+				return
+			}
+
+			if _, err = dal.AddTagArticle(tagArticle); hasError(err) {
+				return
+			}
+
+			ac.addNewArticleCount(len(newArticleList))
+
 			collectData = newData
-			cursor += len(*articleList)
-			for _, article := range *articleList {
+			cursor += len(*allArticleList)
+			for _, article := range newArticleList {
 				ac.saveArticleImg(article)
 			}
 		}
@@ -133,18 +194,24 @@ func (ac *Action) saveArticleImg(m *model.Article) {
 		return
 	}
 
+	hasError := func(err error) bool {
+		if err != nil {
+			tool.ShowErr(errors.Wrap(err, "Get image Reg Error"))
+			return true
+		}
+		return false
+	}
+
 	imageResult := [][]string{}
 	if m.MarkContent != "" {
 		reg, err := regexp.Compile("!\\[.*?\\]\\((http.+?)(\\s.*?)*?\\)")
-		if err != nil {
-			tool.ShowErr(errors.Wrap(err, "Get image Reg Error"))
+		if hasError(err) {
 			return
 		}
 		imageResult = reg.FindAllStringSubmatch(m.MarkContent, -1)
 	} else if m.Content != "" {
 		reg, err := regexp.Compile("<img.*?src=\"(http.+?)\".*?>")
-		if err != nil {
-			tool.ShowErr(errors.Wrap(err, "Get image Reg Error"))
+		if hasError(err) {
 			return
 		}
 		imageResult = reg.FindAllStringSubmatch(m.Content, -1)
@@ -181,11 +248,20 @@ func (ac *Action) saveArticleImg(m *model.Article) {
 		if len(rItem) >= 2 {
 			imgUrl := rItem[1]
 			ac.wg.Add(func() {
-				log.Warn(imgUrl)
-				err := GetImageData(imgUrl, m.ArticleId)
-				if err != nil {
-					tool.ShowErr(errors.Wrap(err, "Get image Request Error"))
+				// log.Warn(imgUrl)
+				has, err := dal.HasImage(imgUrl, m.ArticleId)
+				if hasError(err) || has {
+					return
 				}
+
+				image, err := GetImageData(imgUrl, m.ArticleId)
+				ac.addRequestCount(1)
+				if hasError(err) {
+					return
+				}
+
+				_, err = dal.AddImage(image)
+				hasError(err)
 			})
 		}
 	}

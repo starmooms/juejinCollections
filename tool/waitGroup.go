@@ -58,6 +58,12 @@ func (w *WaitGroup) startTask(id int) {
 	return
 }
 
+func (w *WaitGroup) GetLock(cb func()) {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+	cb()
+}
+
 func (w *WaitGroup) Wait() {
 	w.wg.Wait()
 }

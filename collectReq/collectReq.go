@@ -22,7 +22,7 @@ var request = requestWrap.GetNewRequest
 var imgRequestWrap = &httpRequest.RequestWarp{}
 var imgRequest = imgRequestWrap.GetNewRequest
 
-var userMock = false
+var userMock = true
 
 func init() {
 	if userMock {
@@ -50,9 +50,9 @@ func init() {
 }
 
 func Run() {
-	// // 去掉注释开启
-	// ac := NewAction("1116759544852221")
-	// ac.Run()
+	// 去掉注释开启
+	ac := NewAction("1116759544852221")
+	ac.Run()
 
 	// ac.DbArticleId = []string{"6844903480126078989"}
 	// ac.Run()
@@ -82,10 +82,6 @@ func GetTagList(userId string) (_ *[]model.Tag, err error) {
 	}
 
 	tagList := &reqCollectList.Data
-	if _, err := dal.AddTags(tagList); err != nil {
-		return nil, err
-	}
-
 	return tagList, nil
 }
 
@@ -131,7 +127,7 @@ func GetArticle(id string) (err error) {
 }
 
 // 获取收藏内容
-func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.Article, err error) {
+func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, articleListPtr *[]*model.Article, tagArticlePtr *[]*model.TagArticleId, err error) {
 	collectData = &CollectArticle{}
 	cursorStr := strconv.Itoa(cursor)
 
@@ -157,13 +153,6 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 	articleList := []*model.Article{}
 	tagArticle := []*model.TagArticleId{}
 	var jsonErr *error = nil
-
-	c, _, _, err := jsonparser.Get(*result.Data, "has_more")
-	if err != nil {
-		log.Info(err)
-	} else {
-		log.Info(c)
-	}
 
 	_, err = jsonparser.ArrayEach(*result.Data, func(value []byte, dataType jsonparser.ValueType, offset int, eachErr error) {
 		if jsonErr != nil {
@@ -200,52 +189,32 @@ func GetCollectData(tagId string, cursor int) (collectData *CollectArticle, arti
 	}
 
 	articleListPtr = &articleList
-	if _, err = dal.AddArticle(articleListPtr); err != nil {
-		return
-	}
-
-	if _, err = dal.AddTagArticle(&tagArticle); err != nil {
-		return
-	}
-
+	tagArticlePtr = &tagArticle
 	return
 }
 
 // 获取图片
-func GetImageData(imageUrl string, articleId string) (err error) {
-	has, err := dal.HasImage(imageUrl, articleId)
-	if err != nil {
-		return err
-	}
-
-	if has {
-		return nil
-	}
-
+func GetImageData(imageUrl string, articleId string) (image *model.Image, err error) {
 	httpReq, err := imgRequest(&httpRequest.HttpRequest{
 		Url:    imageUrl,
 		Method: "GET",
 	})
 	if err != nil {
-		return err
+		return
 	}
 
 	result, err := httpReq.DoRequest()
 	if err != nil {
-		return err
+		return
 	}
 
-	_, err = dal.AddImage(&model.Image{
+	image = &model.Image{
 		ArticleId: articleId,
 		Url:       imageUrl,
 		Code:      result.Resp.StatusCode,
 		Ctype:     result.Resp.Header.Get("content-type"),
 		Data:      *result.Data,
-	})
-	if err != nil {
-		return err
 	}
-
-	return nil
+	return
 
 }

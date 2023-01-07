@@ -141,6 +141,17 @@ func AddTagArticle(tagArticle *[]*model.TagArticleId) (sql.Result, error) {
 	})
 }
 
+/** 文章是否存在 */
+func HasArticel(article *model.Article) (bool, error) {
+	has, err := DbDal.Engine.Exist(&model.Article{
+		ArticleId: article.ArticleId,
+	})
+	if err != nil {
+		err = errors.Wrap(err, "HasArticel Err")
+	}
+	return has, err
+}
+
 // 判断图片是否已存在
 func HasImage(imageUrl string, articleId string) (bool, error) {
 	has, err := DbDal.Engine.Exist(&model.Image{

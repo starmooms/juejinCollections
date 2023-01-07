@@ -9,3 +9,5 @@
 __debug_*
 /logs
 /tmp
+*.exe
+!*/.exe
