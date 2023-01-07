@@ -5,8 +5,13 @@ const router = createRouter({
   // routes: [],
   routes: [
     {
+      name: 'article',
       path: '/article/:articleId',
       component: () => import('../views/Article.vue')
+    },
+    {
+      path: '/:path(.*)*',
+      redirect: '/article/6844903974378668039'
     }
   ]
 })

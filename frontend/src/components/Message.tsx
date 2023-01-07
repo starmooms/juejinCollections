@@ -77,7 +77,7 @@ function message(msg: string, _opts?: MessageOpts) {
   boxEl.appendChild(container)
 
   setTimeout(() => {
-    vm.unmount(container)
+    vm.unmount()
     boxEl.removeChild(container)
     boxElState.removeBoxEl()
   }, opts.time)
