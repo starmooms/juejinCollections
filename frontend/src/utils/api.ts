@@ -1,4 +1,4 @@
-import { Article } from "../type"
+import { ApiStatus, Article } from "../type"
 import FetchRequest from "./FetchRequest"
 
 const request = new FetchRequest()
@@ -40,8 +40,14 @@ request.use((ctx, next) => {
 })
 
 export const getArticle = async (params: any) => {
-  return await request.fetch<{ article: Article }>("/api/getArticle", {
+  return await request.fetch<Article>("/api/getArticle", {
     params: params,
     method: "GET"
+  })
+}
+
+export const postSyncCollection = async () => {
+  return await request.fetch<ApiStatus>("/api/syncCollection", {
+    method: "POST"
   })
 }

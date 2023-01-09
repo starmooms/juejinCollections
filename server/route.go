@@ -50,6 +50,7 @@ func SetRoute(r *gin.Engine) {
 	api := r.Group("/api")
 	{
 		api.GET("/getArticle", controller.GetArticle)
+		api.POST("/syncCollection", controller.RunSyncCollection)
 	}
 
 }

@@ -1,14 +1,17 @@
 package controller
 
 import (
+	"juejinCollections/collectReq"
 	"juejinCollections/dal"
 	"juejinCollections/model"
+	"juejinCollections/server/app"
 	"net/http"
 	"net/url"
 
 	"github.com/gin-gonic/gin"
 )
 
+// 获取图片
 func ArticleImage(c *gin.Context) {
 	url, err := url.PathUnescape(c.Query("url"))
 	if err != nil {
@@ -27,12 +30,16 @@ func ArticleImage(c *gin.Context) {
 	c.Data(image.Code, image.Ctype, image.Data)
 }
 
+// 获取文章
 func GetArticle(c *gin.Context) {
+	appG := &app.Gin{
+		C: c,
+	}
 	var err error
 	params := &GetArticleParams{}
 	err = c.ShouldBindQuery(params)
 	if err != nil {
-		BackParamsErr(c, err)
+		appG.BackParamsErr(err)
 		return
 	}
 
@@ -40,19 +47,30 @@ func GetArticle(c *gin.Context) {
 		ArticleId: params.ArticleId,
 	}
 	has, err := dal.Get(article)
-	if !has {
-		code := http.StatusNotFound
-		c.JSON(code, &gin.H{
-			"status": false,
-			"msg":    http.StatusText(code),
-		})
+
+	if appG.HasError(err) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &gin.H{
-		"status": true,
-		"data": &gin.H{
-			"article": article,
-		},
-	})
+	if !has {
+		appG.BackErrCode(http.StatusNotFound)
+		return
+	}
+
+	appG.BackData(article)
+}
+
+// 同步收藏集
+func RunSyncCollection(c *gin.Context) {
+	appG := &app.Gin{
+		C: c,
+	}
+
+	if collectReq.HasRunAction {
+		appG.BackMessageErr("当前正在同步收藏集，不能重复触发")
+		return
+	}
+
+	go collectReq.Run()
+	appG.BackData(nil)
 }

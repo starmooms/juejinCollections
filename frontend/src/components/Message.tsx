@@ -90,5 +90,6 @@ export default {
     app.config.globalProperties.$message = (msg: string, opts?: MessageOpts) => {
       message(msg, opts)
     }
-  }
+  },
+  info: message
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"juejinCollections/collectReq"
 	"juejinCollections/config"
 	"juejinCollections/logger"
 	"juejinCollections/server"
@@ -27,7 +26,7 @@ func main() {
 
 	dal.NewDal(conf.DbFile)
 
-	go collectReq.Run()
+	// go collectReq.Run()
 	// if !conf.Debug {
 	// 	go collectReq.Run()
 	// }

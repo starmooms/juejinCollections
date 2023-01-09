@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"juejinCollections/server/middleware"
+	"juejinCollections/server/websocket"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -27,5 +28,10 @@ func (s *Server) Start() {
 
 	SetRoute(r)
 
-	r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
+	go r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
+
+	websocket.Start(r, s.Port)
+
+	// r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
+	// websocket.Start(r, s.Port)
 }

@@ -7,7 +7,12 @@ const config: vite.UserConfig = {
   base: "/",
   server: {
     proxy: {
-      '/api': "http://localhost:8012"
+      '/api': "http://localhost:8012",
+      "/echo": {
+        target: "ws://localhost:8012",
+        ws: true,
+        secure: false,
+      }
     },
   },
   // optimizeDeps: {

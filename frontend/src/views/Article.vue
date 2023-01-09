@@ -1,11 +1,7 @@
 <template>
   <template v-if="article">
-    <article
-      class="article-container markdown-body"
-      :class="{ 'is-markdown': article.isMarkdown }"
-      ref="articleRef"
-      style="width: 700px; margin: 0 auto"
-    >
+    <article class="article-container markdown-body" :class="{ 'is-markdown': article.isMarkdown }" ref="articleRef"
+      style="width: 700px; margin: 0 auto">
       <h1>{{ article.title }}</h1>
       <VueMarkdown v-if="article.mark_content">
         {{ article.mark_content }}
@@ -18,15 +14,11 @@
 <script lang="ts" setup>
 import VueMarkdown from "../components/vueMarkdown";
 // import hljs from 'highlight.js';
-import prismjs from "prismjs";
-import { computed, defineComponent, nextTick, onMounted, ref } from "vue";
+import "prismjs";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { Article } from "../type";
 import { useRoute } from "vue-router";
 import { getArticle } from "../utils/api";
-
-interface Data {
-  article: null | Article;
-}
 
 const route = useRoute();
 const article = ref<any>(null);
@@ -42,7 +34,7 @@ const getArticleData = async () => {
   });
   if (result.data.status) {
     let articleData = {
-      ...result.data.data.article,
+      ...result.data.data,
       isMarkdown: false,
     };
     let articleId = articleData.article_id;
@@ -82,4 +74,5 @@ onMounted(() => {
 
 
 <style lang="less">
+
 </style>

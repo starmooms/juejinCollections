@@ -18,3 +18,5 @@ export interface Article {
   update_time: string
   user_id: string
 }
+
+export type ApiStatus = null

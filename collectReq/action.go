@@ -1,6 +1,7 @@
 package collectReq
 
 import (
+	"fmt"
 	"juejinCollections/dal"
 	"juejinCollections/logger"
 	"juejinCollections/model"
@@ -28,12 +29,26 @@ func NewAction(userId string) *Action {
 	}
 }
 
+func (ac *Action) infof(format string, args ...interface{}) {
+	logger.Logger.Infof(format, args...)
+	ac.callLog(format, args...)
+}
+
+func (ac *Action) Errorf(err error) {
+	err = tool.ShowErr(err)
+	ac.callLog("%+v\n", err)
+}
+
+func (ac *Action) callLog(format string, args ...interface{}) {
+	fmt.Print(fmt.Sprintf(format, args...))
+}
+
 func (ac *Action) Run() {
 	startTime := time.Now()
 
 	err := dal.DbDal.OpenWal()
 	if err != nil {
-		tool.ShowErr(err)
+		ac.Errorf(err)
 	}
 
 	ac.start()
@@ -41,7 +56,7 @@ func (ac *Action) Run() {
 
 	err = dal.DbDal.CloseWal()
 	if err != nil {
-		tool.ShowErr(err)
+		ac.Errorf(err)
 	}
 
 	endTime := time.Now()
@@ -50,7 +65,7 @@ func (ac *Action) Run() {
 	tFormat := "2006-01-02 15:04:05"
 	sTime := startTime.Format(tFormat)
 	eTime := endTime.Format(tFormat)
-	logger.Logger.Infof(`{
+	ac.infof(`{
 		"start": "%s",
 		"end": "%s",
 		"run": "%v",
@@ -100,10 +115,10 @@ func (ac *Action) refreshDbArticleImg() {
 			ac.wg.Add(func() {
 				has, err := dal.Get(article)
 				if err != nil {
-					tool.ShowErr(err)
+					ac.Errorf(err)
 					return
 				} else if !has {
-					tool.ShowErr(errors.New(article.ArticleId + "Not Found In Db"))
+					ac.Errorf(errors.New(article.ArticleId + "Not Found In Db"))
 					return
 				}
 				ac.saveArticleImg(article)
@@ -118,12 +133,12 @@ func (ac *Action) getAllCollect() {
 		tagList, err := GetTagList(ac.UserId)
 		ac.addRequestCount(1)
 		if err != nil {
-			tool.ShowErr(err)
+			ac.Errorf(err)
 			return
 		}
 
 		if _, err := dal.AddTags(tagList); err != nil {
-			tool.ShowErr(err)
+			ac.Errorf(err)
 			return
 		}
 
@@ -142,7 +157,7 @@ func (ac *Action) saveCollectData(tagId string) {
 
 		hasError := func(err error) bool {
 			if err != nil {
-				tool.ShowErr(errors.Wrapf(err, "SaveCollectData Err At Cursor:%d", cursor))
+				ac.Errorf(errors.Wrapf(err, "SaveCollectData Err At Cursor:%d", cursor))
 				collectData = nil
 				return true
 			}
@@ -196,7 +211,7 @@ func (ac *Action) saveArticleImg(m *model.Article) {
 
 	hasError := func(err error) bool {
 		if err != nil {
-			tool.ShowErr(errors.Wrap(err, "Get image Reg Error"))
+			ac.Errorf(errors.Wrap(err, "Get image Reg Error"))
 			return true
 		}
 		return false

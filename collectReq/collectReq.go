@@ -22,6 +22,7 @@ var request = requestWrap.GetNewRequest
 var imgRequestWrap = &httpRequest.RequestWarp{}
 var imgRequest = imgRequestWrap.GetNewRequest
 
+var HasRunAction = false
 var userMock = true
 
 func init() {
@@ -50,10 +51,11 @@ func init() {
 }
 
 func Run() {
+	HasRunAction = true
 	// 去掉注释开启
 	ac := NewAction("1116759544852221")
 	ac.Run()
-
+	HasRunAction = false
 	// ac.DbArticleId = []string{"6844903480126078989"}
 	// ac.Run()
 }
