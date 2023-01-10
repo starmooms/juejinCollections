@@ -40,7 +40,7 @@ func (ac *Action) Errorf(err error) {
 }
 
 func (ac *Action) callLog(format string, args ...interface{}) {
-	fmt.Print(fmt.Sprintf(format, args...))
+	ClientLog(fmt.Sprintf(format, args...))
 }
 
 func (ac *Action) Run() {
@@ -94,7 +94,7 @@ func (ac *Action) start() {
 func (ac *Action) addRequestCount(count int) {
 	ac.wg.GetLock(func() {
 		ac.requestCount += count
-		logger.Logger.Infof(`requestCount: %d`, ac.requestCount)
+		ac.infof(`requestCount: %d`, ac.requestCount)
 	})
 }
 

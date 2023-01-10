@@ -12,7 +12,7 @@ import (
 
 func main() {
 	defer func() {
-		logger.Logger.Error("???")
+		logger.Logger.Error("exit")
 	}()
 	// r := gin.Default()
 	conf := config.Config

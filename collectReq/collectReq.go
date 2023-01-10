@@ -15,6 +15,8 @@ import (
 )
 
 var log = logger.Logger
+var clientLogId int = 0
+var clientLog = make(map[int]func(data string))
 
 var requestWrap = &httpRequest.RequestWarp{}
 var request = requestWrap.GetNewRequest
@@ -51,6 +53,9 @@ func init() {
 }
 
 func Run() {
+	if HasRunAction {
+		return
+	}
 	HasRunAction = true
 	// 去掉注释开启
 	ac := NewAction("1116759544852221")
@@ -58,6 +63,22 @@ func Run() {
 	HasRunAction = false
 	// ac.DbArticleId = []string{"6844903480126078989"}
 	// ac.Run()
+}
+
+func SetRunLog(logFun func(data string)) int {
+	clientLogId += 1
+	clientLog[clientLogId] = logFun
+	return clientLogId
+}
+
+func DelRunLog(id int) {
+	delete(clientLog, id)
+}
+
+func ClientLog(data string) {
+	for _, logFun := range clientLog {
+		logFun(data)
+	}
 }
 
 // 获取收藏列表

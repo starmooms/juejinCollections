@@ -28,9 +28,9 @@ func (s *Server) Start() {
 
 	SetRoute(r)
 
-	go r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
+	websocket.Start(r)
 
-	websocket.Start(r, s.Port)
+	r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
 
 	// r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
 	// websocket.Start(r, s.Port)
