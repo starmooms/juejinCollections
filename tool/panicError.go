@@ -9,6 +9,10 @@ import (
 
 var logs = logger.Logger
 
+func PanicErrMsg(errMsg string) {
+	PanicErr(errors.New(errMsg))
+}
+
 func PanicErr(err error) {
 	if err != nil {
 		logs.Errorf("%+v", errors.NewWithDepth(1, err.Error()))

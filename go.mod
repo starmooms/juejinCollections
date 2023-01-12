@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/jinzhu/configor v1.2.1
 	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	xorm.io/xorm v1.0.6
 )

@@ -55,10 +55,16 @@ help:
 front-build:
 	cd ./frontend && yarn build
 
-win: front-build go-win
-mac: front-build go-mac
-linux: front-build go-linux
-all: front-build go-all
+## 用statik 打包静态文件
+static-build:
+	statik -src=frontend/dist -dest=server/statikFs/ -f
+
+pre-build: static-build
+
+win: pre-build go-win
+mac: pre-build go-mac
+linux: pre-build go-linux
+all: pre-build go-all
 
 
 # // http://www.45fan.com/article.php?aid=1D7T0Iy4Q43XhrJH
