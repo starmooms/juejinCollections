@@ -12,4 +12,6 @@ __debug_*
 *.exe
 !*/.exe
 /bin
-server/statikFs/statik/
+
+statikFs/statik/
+statikFs/.static/

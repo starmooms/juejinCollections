@@ -119,3 +119,8 @@ func LimtStr(str string, limt int) string {
 	}
 	return str
 }
+
+func RegExpReplace(expr string, src string, repl string) string {
+	reg := regexp.MustCompile(expr)
+	return reg.ReplaceAllString(src, repl)
+}

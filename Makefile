@@ -57,9 +57,14 @@ front-build:
 
 ## 用statik 打包静态文件
 static-build:
-	statik -src=frontend/dist -dest=server/statikFs/ -f
+	@if [ -f ./statikFs/.static/ ] ; then rm ./statikFs/.static/; fi
+	mkdir -p ./statikFs/.static/frontend/ ./statikFs/.static/collectReq/
+	cp ./frontend/dist/ ./statikFs/.static/frontend/ -r
+	cp ./collectReq/mock.json ./statikFs/.static/collectReq/mock.json -r
+	statik -src=statikFs/.static -dest=statikFs/ -f
+	rm -rf ./statikFs/.static/
 
-pre-build: static-build
+pre-build: front-build static-build
 
 win: pre-build go-win
 mac: pre-build go-mac

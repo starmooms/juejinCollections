@@ -30,6 +30,7 @@ func (s *Server) Start() {
 
 	websocket.Start(r)
 
+	fmt.Printf("server start http://%s:%d", s.Host, s.Port)
 	r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
 
 	// r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))

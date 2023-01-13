@@ -1,9 +1,11 @@
 package main
 
 import (
+	"juejinCollections/collectReq"
 	"juejinCollections/config"
 	"juejinCollections/logger"
 	"juejinCollections/server"
+	"juejinCollections/statikFs"
 
 	"github.com/gin-gonic/gin"
 
@@ -16,6 +18,7 @@ func main() {
 	}()
 	// r := gin.Default()
 	conf := config.Config
+	statikFs.InitStatikFs()
 
 	if conf.IsDebug {
 		logger.SetDebugLog(true)
@@ -25,6 +28,7 @@ func main() {
 	}
 
 	dal.NewDal(conf.DbFile)
+	collectReq.InitCollectReq()
 
 	// go collectReq.Run()
 	// if !conf.Debug {

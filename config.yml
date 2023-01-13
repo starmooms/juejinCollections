@@ -1,4 +1,5 @@
 isDebug: true
+isDevelopment: false
 host: ""
 port: 8012
 dbFile: "./test.db"

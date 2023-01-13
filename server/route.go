@@ -1,9 +1,8 @@
 package server
 
 import (
-	"io/ioutil"
 	"juejinCollections/server/controller"
-	"juejinCollections/server/statikFs"
+	"juejinCollections/statikFs"
 	"juejinCollections/tool"
 	"net/http"
 	"strings"
@@ -11,25 +10,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetRoute(r *gin.Engine) {
-	statikFs.InitStatikFs()
+func isXhr(c *gin.Context) bool {
+	s := strings.ToUpper(c.Request.Header.Get("X-Requested-With"))
+	return s == "XMLHTTPREQUEST"
+}
 
+func SetRoute(r *gin.Engine) {
+
+	// 如果需要模板的方式参考 https://github.com/rakyll/statik/issues/18
 	// r.LoadHTMLGlob("frontend/dist/*.html")
+
 	r.NoRoute(func(c *gin.Context) {
-		if c.Request.Method == "GET" {
-			s := strings.ToUpper(c.Request.Header.Get("X-Requested-With"))
-			isXhr := s == "XMLHTTPREQUEST"
-			if !isXhr {
-				// 模板的方式参考 https://github.com/rakyll/statik/issues/18
-				f, err := statikFs.GetFileSystem().Open("/index.html")
-				if err != nil {
-					tool.PanicErrMsg("no index.html")
-				}
-				b, err := ioutil.ReadAll(f)
-				c.Data(http.StatusOK, "text/html;charset=utf-8", b)
-				// c.HTML(http.StatusOK, "index.html", gin.H{})
-				return
+		if c.Request.Method == "GET" && !isXhr(c) {
+			data, err := statikFs.GetFileData("./frontend/dist/index.html")
+			if err != nil {
+				tool.PanicErr(err)
 			}
+			c.Data(http.StatusOK, "text/html;charset=utf-8", data)
+			// c.HTML(http.StatusOK, "index.html", gin.H{})
+			return
 		}
 
 		code := http.StatusNotFound
@@ -39,15 +38,8 @@ func SetRoute(r *gin.Engine) {
 		})
 	})
 
-	// r.Static("/assets", "frontend/dist/assets")
-	// r.StaticFile("/favicon.ico", "frontend/dist/favicon.ico")
-
-	// statikFs.GetFile()
-
-	r.StaticFS("/assets", statikFs.OpenDir("/assets/"))
-	r.GET("/favicon.ico", func(c *gin.Context) {
-		c.FileFromFS("/favicon.ico", statikFs.GetFileSystem())
-	})
+	statikFs.SetGinStatic(r, "/assets", "frontend/dist/assets")
+	statikFs.SetGinStaticFile(r, "/favicon.ico", "frontend/dist/favicon.ico")
 
 	imageGroup := r.Group("/images")
 	{

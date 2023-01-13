@@ -27,7 +27,7 @@ var imgRequest = imgRequestWrap.GetNewRequest
 var HasRunAction = false
 var userMock = true
 
-func init() {
+func InitCollectReq() {
 	if userMock {
 		requestWrap.Use(GetMockRequest())
 	}

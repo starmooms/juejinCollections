@@ -1,8 +1,8 @@
 package collectReq
 
 import (
-	"io/ioutil"
 	"juejinCollections/httpRequest"
+	"juejinCollections/statikFs"
 	"juejinCollections/tool"
 
 	"github.com/buger/jsonparser"
@@ -18,7 +18,7 @@ type Mock struct {
 /** 创建mock数据 */
 func NewMock() *Mock {
 	var err error
-	t, err := ioutil.ReadFile("./collectReq/mock.json")
+	t, err := statikFs.GetFileData("./collectReq/mock.json")
 	tool.PanicErr(err)
 
 	tags, _, _, err := jsonparser.Get(t, "tags")
