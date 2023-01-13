@@ -65,3 +65,10 @@ func ShowErr(err error) error {
 	logs.Errorf("%+v\n", err)
 	return err
 }
+
+/** 返回并打印错误 */
+func ShowErrMsg(msg string) error {
+	err := SetErrStack(errors.New(msg), 2)
+	logs.Errorf("%+v\n", err)
+	return err
+}

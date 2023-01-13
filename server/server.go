@@ -2,8 +2,10 @@ package server
 
 import (
 	"fmt"
+	"juejinCollections/config"
 	"juejinCollections/server/middleware"
 	"juejinCollections/server/websocket"
+	"juejinCollections/tool"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -25,14 +27,18 @@ func (s *Server) Start() {
 		gin.Recovery(),
 		middleware.Recovery(s.Logger),
 	)
-
 	SetRoute(r)
-
 	websocket.Start(r)
 
-	fmt.Printf("server start http://%s:%d", s.Host, s.Port)
-	r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
+	hostName := fmt.Sprintf("%s:%d", s.Host, s.Port)
+	serverUrl := fmt.Sprintf("http://%s", hostName)
 
-	// r.Run(fmt.Sprintf("%s:%d", s.Host, s.Port))
-	// websocket.Start(r, s.Port)
+	go func() {
+		fmt.Printf("server start %s", serverUrl)
+		if !config.Config.IsDevelopment {
+			tool.OpenBrowser(serverUrl)
+		}
+	}()
+
+	r.Run(hostName)
 }
