@@ -115,7 +115,7 @@ func insertOrUpdate(mainField, noUpdateField []string, valList interface{}, wher
 
 // 添加收藏列表
 func AddTags(list *[]model.Tag) (sql.Result, error) {
-	main := []string{"Id"}
+	main := []string{"CollectionId"}
 	noUpdate := []string{"CreateDate"}
 	tool.SetTimeFile([]string{"CreateDate", "UpdateDate"}, list)
 	return insertOrUpdate(main, noUpdate, list, nil)

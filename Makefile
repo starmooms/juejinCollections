@@ -71,6 +71,9 @@ mac: pre-build go-mac
 linux: pre-build go-linux
 all: pre-build go-all
 
+dev:
+	cd ./frontend && yarn dev
+
 
 # // http://www.45fan.com/article.php?aid=1D7T0Iy4Q43XhrJH
 # APP = task

@@ -2,6 +2,7 @@ package collectReq
 
 import (
 	"encoding/json"
+	"juejinCollections/config"
 	"juejinCollections/dal"
 	"juejinCollections/httpRequest"
 	"juejinCollections/logger"
@@ -25,10 +26,9 @@ var imgRequestWrap = &httpRequest.RequestWarp{}
 var imgRequest = imgRequestWrap.GetNewRequest
 
 var HasRunAction = false
-var userMock = true
 
 func InitCollectReq() {
-	if userMock {
+	if config.Config.UseMock {
 		requestWrap.Use(GetMockRequest())
 	}
 

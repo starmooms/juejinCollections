@@ -3,10 +3,8 @@ package model
 import "time"
 
 // v2 改为了 TagId/TagName 先兼容 collection_id/collection_name
-// UpdateTime 存在冲突
 
 type Tag struct {
-	Id               uint      `json:"id" xorm:"'id' pk notnull unique"`
 	CollectionId     string    `json:"collection_id" xorm:"index notnull unique"`
 	CollectionName   string    `json:"collection_name" xorm:"index notnull"`
 	PostArticleCount int       `json:"post_article_count"`
