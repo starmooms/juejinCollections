@@ -26,7 +26,7 @@ go-linux:
 ## win: 编译打包win
 .PHONY: go-win
 go-win:
-	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build $(RACE) -o ./bin/${APP}-win64.exe ./main.go
+	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build $(RACE) -o ./bin/${APP}-win64.exe -ldflags="-H=windowsgui"
  
 ## mac: 编译打包mac
 .PHONY: go-mac

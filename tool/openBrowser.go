@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"juejinCollections/tool/platform"
 	"os/exec"
+	"syscall"
 )
 
+// https://github.com/tonoy30/openbrowser
 func OpenBrowser(url string) {
 	var args []string
 	goos := platform.GetGOOS()
+	isWin := false
 
 	switch goos {
 	case platform.Win:
+		isWin = true
 		args = []string{"cmd", "/c", "start", url}
 	case platform.Darwin:
 		args = []string{"xdg-open", url}
@@ -24,6 +28,14 @@ func OpenBrowser(url string) {
 
 	mainArg := args[0]
 	otherArgs := args[1:]
-	fmt.Print(args)
-	exec.Command(mainArg, otherArgs...).Start()
+
+	cmd := exec.Command(mainArg, otherArgs...)
+
+	// https://qa.1r1g.com/sf/ask/2975039931/
+	// 解决window下会cmd闪烁
+	if isWin {
+		cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x08000000}
+	}
+
+	cmd.Run()
 }

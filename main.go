@@ -4,8 +4,8 @@ import (
 	"juejinCollections/collectReq"
 	"juejinCollections/config"
 	"juejinCollections/logger"
-	"juejinCollections/server"
 	"juejinCollections/statikFs"
+	"juejinCollections/sysManager"
 
 	"github.com/gin-gonic/gin"
 
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	defer func() {
-		logger.Logger.Error("exit")
+		logger.Logger.Debug("All exit")
 	}()
 	// r := gin.Default()
 	conf := config.Config
@@ -30,15 +30,5 @@ func main() {
 	dal.NewDal(conf.DbFile)
 	collectReq.InitCollectReq()
 
-	// go collectReq.Run()
-	// if !conf.Debug {
-	// 	go collectReq.Run()
-	// }
-	srv := &server.Server{
-		Port:   conf.Port,
-		Host:   conf.Host,
-		Logger: logger.Logger,
-	}
-	srv.Start()
-
+	sysManager.Init()
 }

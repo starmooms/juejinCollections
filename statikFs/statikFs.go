@@ -24,7 +24,7 @@ func InitStatikFs() {
 
 // 在statik中一切文件都已 / 开头
 func GetStatikPath(path string) string {
-	return "/" + tool.RegExpReplace("^./", path, "")
+	return "/" + tool.RegExpReplace("^(./|../)", path, "")
 }
 
 func OpenDir(name string) http.FileSystem {
@@ -47,6 +47,14 @@ func GetFileData(file string) ([]byte, error) {
 		return nil, err
 	}
 	return ioutil.ReadAll(r)
+}
+
+func GetFileDataMust(file string) []byte {
+	fileData, err := GetFileData(file)
+	if err != nil {
+		tool.PanicErr(err)
+	}
+	return fileData
 }
 
 func SetGinStatic(r *gin.Engine, relativePath string, root string) {
