@@ -1,0 +1,96 @@
+name: Build/release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+      
+      - name: Setting node version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.12.0
+          ## https://github.com/actions/setup-node#caching-global-packages-data
+          cache: 'yarn'
+          cache-dependency-path: './frontend/yarn.lock'
+
+      - name: Setting go version
+        uses: actions/setup-go@main
+        with:
+          # go-version: '1.17'
+          go-version-file: 'go.mod'
+          cache: true
+          ## 将check latest设置为true会影响性能，因为下载Go版本比使用缓存版本慢。
+          # check-latest: true
+
+      # - name: Check Version
+      #   # run 执行多个命令是 | 换行？？
+      #   run: |
+      #     go version
+      #     cd ./frontend
+      #     pwd
+      #     node -v
+      #     yarn -v
+
+      ## https://github.com/getlantern/systray
+      - name: Install Sys Module
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libgtk-3-dev libayatana-appindicator3-dev
+          version: 1.0
+        # run: |
+        #   sudo apt-get install gcc libgtk-3-dev libayatana-appindicator3-dev --fix-missing
+        # shell: bash
+      
+      - name: Install Module
+        run: |
+          go mod download
+          go install github.com/rakyll/statik
+          cd ./frontend
+          yarn install --frozen-lockfile --immutable
+      
+      - name: Start build
+        run: |
+          make -v
+          pwd
+          make linux
+
+      - name: Generate Compressed File
+        run: |
+          cd ./bin
+          zip juejin_collections-linux64.zip juejin_collections-linux64
+      
+      - uses: ncipollo/release-action@v1
+        with:
+          # 版本已存在则替换
+          allowUpdates: true
+          artifacts: "bin/juejin_collections-linux64.zip"
+          tag: "v0.0.0-alpha"
+          body: "test release v0.0.0-alpha"
+
+  
+  # release:
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Generate Compressed File
+  #       run: |
+  #         cd ./bin
+  #         zip juejin_collections-linux64.zip juejin_collections-linux64
+
+  #     - uses: ncipollo/release-action@v1
+  #       with:
+  #         # 版本已存在则替换
+  #         allowUpdates: true
+  #         artifacts: "bin/juejin_collections-linux64.zip"
+  #         tag: "v0.0.0-alpha"
+  #         body: "test release v0.0.0-alpha"

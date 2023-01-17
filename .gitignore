@@ -13,5 +13,6 @@ __debug_*
 !*/.exe
 /bin
 
+statikFs/temp/
 statikFs/statik/
 statikFs/.static/

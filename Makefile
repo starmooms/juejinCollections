@@ -1,5 +1,9 @@
 
 APP = juejin_collections
+## MKFILE_FILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+## MKFILE_DIR := $(dir $(MKFILE_FILE))
+## MKFILE_DIR := $(patsubst %/,%, $(dir $(MKFILE_FILE)))
+ROOT_PATH = $(CURDIR)
 
 ## 普通build
 build:
@@ -57,12 +61,12 @@ front-build:
 
 ## 用statik 打包静态文件
 static-build:
-	@if [ -f ./statikFs/.static/ ] ; then rm ./statikFs/.static/; fi
-	mkdir -p ./statikFs/.static/frontend/ ./statikFs/.static/collectReq/
-	cp ./frontend/dist/ ./statikFs/.static/frontend/ -r
-	cp ./collectReq/mock.json ./statikFs/.static/collectReq/mock.json -r
-	statik -src=statikFs/.static -dest=statikFs/ -f
-	rm -rf ./statikFs/.static/
+	@if [ -f ./statikFs/temp/ ] ; then rm ./statikFs/temp/; fi
+	mkdir -p ./statikFs/temp/frontend/ ./statikFs/temp/collectReq/
+	cp ./frontend/dist/ ./statikFs/temp/frontend/ -r
+	cp ./collectReq/mock.json ./statikFs/temp/collectReq/mock.json -r
+	statik -src=${ROOT_PATH}/statikFs/temp -dest=${ROOT_PATH}/statikFs -f
+	rm -rf ./statikFs/temp/
 
 pre-build: front-build static-build
 
@@ -73,7 +77,6 @@ all: pre-build go-all
 
 dev:
 	cd ./frontend && yarn dev
-
 
 # // http://www.45fan.com/article.php?aid=1D7T0Iy4Q43XhrJH
 # APP = task
