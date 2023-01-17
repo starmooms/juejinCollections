@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import 'uno.css'
 import './index.less'
 import Message from './components/Message'
 import { router } from './routes'
