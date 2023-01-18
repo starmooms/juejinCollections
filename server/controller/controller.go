@@ -74,3 +74,30 @@ func RunSyncCollection(c *gin.Context) {
 	go collectReq.Run()
 	appG.BackData(nil)
 }
+
+func SearchArticle(c *gin.Context) {
+	appG := &app.Gin{
+		C: c,
+	}
+
+	params := &SearchArticleParams{}
+	err := c.ShouldBindQuery(params)
+	if err != nil {
+		appG.BackParamsErr(err)
+		return
+	}
+
+	list := &[]model.Article{}
+	dalCursor := dal.NewCursorList(list, params.Limt, params.Cursor)
+	// https://gitea.com/xorm/xorm/issues/863
+	searchKey := "%" + params.Keyword + "%"
+	session := dal.DbDal.Engine.Where("content LIKE ? OR mark_content LIKE ?", searchKey, searchKey)
+
+	err = dalCursor.GetCursorData(session)
+	if appG.HasError(err) {
+		return
+	}
+
+	appG.BackData(dalCursor)
+	return
+}

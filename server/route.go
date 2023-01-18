@@ -62,6 +62,7 @@ func SetRoute(r *gin.Engine) {
 	{
 		api.GET("/getArticle", controller.GetArticle)
 		api.POST("/syncCollection", controller.RunSyncCollection)
+		api.GET("/searchArticle", controller.SearchArticle)
 	}
 
 }

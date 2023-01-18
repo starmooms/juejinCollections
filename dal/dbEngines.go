@@ -59,7 +59,7 @@ func (d *Dal) newEngine() (*xorm.Engine, error) {
 	// }
 
 	engine.SetLogger(DalLogNew())
-	// engine.ShowSQL(true)                  // 打印sql语句
+	engine.ShowSQL(true)                  // 打印sql语句
 	engine.SetMapper(names.GonicMapper{}) // 支持结构体名称和对应的表名称以及结构体field名称与对应的表字段名称相同的命名
 	engine.DatabaseTZ, err = time.LoadLocation("Local")
 	if err != nil {

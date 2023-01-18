@@ -10,6 +10,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	_ "github.com/mattn/go-sqlite3"
+	"xorm.io/xorm"
 )
 
 /** 插入或更新 */
@@ -183,7 +184,16 @@ func GetImage(image *model.Image) (bool, error) {
 	return has, err
 }
 
-// Get 包装错误
+// 通用 GetList 获取 包装错误
+func GetListForCursor(session *xorm.Session, params CursorBase) error {
+	err := session.Limit(params.Limt, params.Cursor).Find(params.List)
+	if err != nil {
+		return errors.Wrap(err, "db Err")
+	}
+	return nil
+}
+
+// 通用 Get 获取 包装错误
 func Get(bean interface{}) (bool, error) {
 	has, err := DbDal.Engine.Get(bean)
 	if err != nil {

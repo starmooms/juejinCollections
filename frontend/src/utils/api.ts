@@ -51,3 +51,10 @@ export const postSyncCollection = async () => {
     method: "POST"
   })
 }
+
+export const searchArticleList = async (params: any) => {
+  return await request.fetch<ApiStatus>("/api/searchArticle", {
+    method: "GET",
+    params,
+  })
+}

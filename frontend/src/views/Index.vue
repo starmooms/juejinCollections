@@ -12,7 +12,8 @@
       <div class="h-600px my-4">
         <div class="tab1" v-if="curTab === 1">
           <div class="mx-auto max-w-600px">
-            <input type="text" class="b-rd-2 leading-40px b-none outline-none w-full px-4 text-xl" />
+            <input v-model.trim="keyword" @input="handleSearchList" type="text"
+              class="b-rd-2 leading-40px b-none outline-none w-full px-4 text-xl" />
           </div>
         </div>
         <div class="tab2" v-if="curTab === 2">
@@ -32,6 +33,8 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { searchArticleList } from "../utils/api";
+import { useDebounce } from '../utils/util'
 
 const log = ref('')
 
@@ -47,6 +50,18 @@ const tabList = ref([
 const selectTab = (tabItem: { id: number }) => {
   curTab.value = tabItem.id
 }
+
+
+const keyword = ref('')
+const articleList = ref([])
+
+const handleSearchList = () => useDebounce(async () => {
+  const data = await searchArticleList({
+    keyword: keyword.value
+  })
+
+}, 100)
+
 
 
 const createWebStocket = () => {
@@ -90,16 +105,6 @@ const createWebStocket = () => {
     send,
     close
   }
-
-  // window.closeWW = function () {
-  //   // https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket/close
-  //   sock.close(CODE.CLOSE_NORMAL, 'client close')
-  // }
-  // window.sendWW = function (v) {
-  //   // https://developer.mozilla.org/zh-CN/docs/Web/API/WebSocket/close
-  //   sock.send(v)
-  //   sock.close(CODE.CLOSE_NORMAL, 'client close')
-  // }
 }
 
 const wsState = createWebStocket()
