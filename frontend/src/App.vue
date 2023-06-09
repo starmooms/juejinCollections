@@ -12,11 +12,6 @@ interface Data {
 
 export default defineComponent({
   name: "App",
-  setup() {},
+  setup() { },
 });
 </script>
-
-
-
-<style lang="less">
-</style>

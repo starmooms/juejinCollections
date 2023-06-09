@@ -131,8 +131,3 @@ onUnmounted(() => {
 
 </script>
 
-
-
-<style lang="less">
-
-</style>

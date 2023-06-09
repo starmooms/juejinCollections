@@ -5,7 +5,7 @@ import legacy from '@vitejs/plugin-legacy'
 import UnoCSS from '@unocss/vite'
 import { presetUno } from 'unocss'
 
-
+console.log(process.env.DDKB)
 const config: vite.UserConfig = {
   base: "/",
   server: {

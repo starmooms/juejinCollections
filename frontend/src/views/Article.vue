@@ -71,8 +71,3 @@ onMounted(() => {
 });
 </script>
 
-
-
-<style lang="less">
-
-</style>

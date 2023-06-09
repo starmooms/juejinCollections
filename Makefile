@@ -3,7 +3,8 @@ APP = juejin_collections
 ## MKFILE_FILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 ## MKFILE_DIR := $(dir $(MKFILE_FILE))
 ## MKFILE_DIR := $(patsubst %/,%, $(dir $(MKFILE_FILE)))
-ROOT_PATH = $(CURDIR)
+ROOT_PATH := $(CURDIR)
+FRONTEND_PATH := ./frontend
 
 ## 普通build
 build:
@@ -23,22 +24,18 @@ build:
 ## go-sqlite3 可能需要cgo编译，需要对应系统的c编译器，所有CGO_ENABLED=0设置为0，但文件可能无法运行。。。
 
 ## linux: 编译打包linux
-.PHONY: go-linux
 go-linux:
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build $(RACE) -o ./bin/${APP}-linux64 ./main.go
  
 ## win: 编译打包win
-.PHONY: go-win
 go-win:
 	CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build $(RACE) -o ./bin/${APP}-win64.exe -ldflags="-H=windowsgui"
  
 ## mac: 编译打包mac
-.PHONY: go-mac
 go-mac:
 	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build $(RACE) -o ./bin/${APP}-darwin64 ./main.go
  
 ## 编译win，linux，mac平台
-.PHONY: go-all
 go-all: win linux mac
 
 ## 检查go模块 进行安装或删除
@@ -76,7 +73,39 @@ linux: pre-build go-linux
 all: pre-build go-all
 
 dev:
-	cd ./frontend && yarn dev
+	cd FRONTEND_PATH && yarn dev
+
+dev-server:
+	go run .
+
+dev-server-fresh: 
+	fresh -c fresh.conf
+
+# 安装依赖
+dep-download:
+	go mod download && cd FRONTEND_PATH && yarn install
+
+
+.PHONY: \
+	go-win \
+	go-linux \
+	go-mac \
+	go-all \
+	tidy \
+	clean \
+	help \
+	front-build \
+	static-build \
+	pre-build \
+	win \
+	mac \
+	linux \
+	all \
+	dev \
+	dev-server \
+	dev-server-fresh \
+	dep-download \
+
 
 # // http://www.45fan.com/article.php?aid=1D7T0Iy4Q43XhrJH
 # APP = task
