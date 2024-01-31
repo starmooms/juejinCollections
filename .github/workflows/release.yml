@@ -74,19 +74,19 @@ jobs:
           path-type: inherit
       
       - name: Install Module
-        shell: ${{ matrix.build_shell }}
         run: |
           go mod download
           go install github.com/rakyll/statik
           cd ./frontend
           yarn install --frozen-lockfile --immutable
+        shell: ${{ matrix.build_shell }}
       
       - name: Start build
-        shell: ${{ matrix.build_shell }}
         run: |
           make -v
           pwd
           ${{ matrix.make_cmd }}
+        shell: ${{ matrix.build_shell }}
 
       # - name: Generate Compressed File
       #   run: |
