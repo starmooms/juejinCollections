@@ -8,9 +8,10 @@ on:
 
 jobs:
   build:
-    matrix:
-      - os: ubuntu-latest
-        asset_name: juejin_collections-linux64
+    strategy:
+      matrix:
+        - os: ubuntu-latest
+          asset_name: juejin_collections-linux64
 
     runs-on: ${{ matrix.os }}
 
