@@ -73,8 +73,8 @@ jobs:
           # 版本已存在则替换
           allowUpdates: true
           artifacts: "bin/juejin_collections-linux64.zip"
-          tag: "v0.0.0-alpha"
-          body: "test release v0.0.0-alpha"
+          tag: "v0.0.1-alpha"
+          body: "test release v0.0.1-alpha"
 
   
   # release:
