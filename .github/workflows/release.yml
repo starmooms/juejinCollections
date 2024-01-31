@@ -109,5 +109,5 @@ jobs:
           allowUpdates: true
           replacesArtifacts: true
           artifacts: "bin/${{ matrix.asset_name }}"
-          tag: "v0.0.2-alpha"
-          body: "test release v0.0.2-alpha"
+          tag: "v0.0.3-alpha"
+          body: "test release v0.0.3-alpha"
