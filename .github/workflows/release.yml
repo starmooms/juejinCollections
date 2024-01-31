@@ -42,15 +42,6 @@ jobs:
           ## 将check latest设置为true会影响性能，因为下载Go版本比使用缓存版本慢。
           # check-latest: true
 
-      # - name: Check Version
-      #   # run 执行多个命令是 | 换行？？
-      #   run: |
-      #     go version
-      #     cd ./frontend
-      #     pwd
-      #     node -v
-      #     yarn -v
-
       ## https://github.com/getlantern/systray
       - name: Install Sys Module
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -120,22 +111,3 @@ jobs:
           artifacts: "bin/${{ matrix.asset_name }}"
           tag: "v0.0.2-alpha"
           body: "test release v0.0.2-alpha"
-
-
-  # release:
-  #   needs: [build]
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Generate Compressed File
-  #       run: |
-  #         cd ./bin
-  #         zip juejin_collections-linux64.zip juejin_collections-linux64
-
-  #     - uses: ncipollo/release-action@v1
-  #       with:
-  #         # 版本已存在则替换
-  #         allowUpdates: true
-  #         artifacts: "bin/juejin_collections-linux64.zip"
-  #         tag: "v0.0.0-alpha"
-  #         body: "test release v0.0.0-alpha"
