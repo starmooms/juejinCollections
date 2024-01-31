@@ -12,9 +12,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            make_cmd: make liunx
             asset_name: juejin_collections-linux64
-          - os: windows-latest
-            asset_name: juejin_collections-win64.exe
+          # - os: windows-latest
+          #   make_cmd: make win
+          #   asset_name: juejin_collections-win64.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -71,7 +73,7 @@ jobs:
         run: |
           make -v
           pwd
-          make linux
+          ${{ matrix.make_cmd }}
 
       # - name: Generate Compressed File
       #   run: |
@@ -84,9 +86,9 @@ jobs:
           # 版本已存在是否允许更新
           allowUpdates: true
           replacesArtifacts: true
-          artifacts: "bin/{{asset_name}}"
-          tag: "v0.0.1-alpha"
-          body: "test release v0.0.1-alpha"
+          artifacts: "bin/${{ matrix.asset_name }}"
+          tag: "v0.0.2-alpha"
+          body: "test release v0.0.2-alpha"
 
 
   # release:
