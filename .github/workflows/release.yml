@@ -79,14 +79,14 @@ jobs:
           go install github.com/rakyll/statik
           cd ./frontend
           yarn install --frozen-lockfile --immutable
-        shell: ${{ matrix.build_shell }}
+        shell: "${{ matrix.build_shell }}"
       
       - name: Start build
         run: |
           make -v
           pwd
           ${{ matrix.make_cmd }}
-        shell: ${{ matrix.build_shell }}
+        shell: "${{ matrix.build_shell }}"
 
       # - name: Generate Compressed File
       #   run: |
