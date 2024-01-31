@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            make_cmd: make liunx
+            make_cmd: make linux
             asset_name: juejin_collections-linux64
           # - os: windows-latest
           #   make_cmd: make win
