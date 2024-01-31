@@ -68,15 +68,31 @@ jobs:
           cd ./bin
           zip juejin_collections-linux64.zip juejin_collections-linux64
       
-      - uses: ncipollo/release-action@v1
+      # - uses: ncipollo/release-action@v1
+      #   with:
+      #     # 版本已存在是否允许更新
+      #     allowUpdates: true
+      #     replacesArtifact: true
+      #     artifacts: "bin/juejin_collections-linux64.zip"
+      #     tag: "v0.0.1-alpha"
+      #     body: "test release v0.0.1-alpha"
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload binaries to release
+        uses: ncipollo/release-action@v1
         with:
-          # 版本已存在则替换
+          # 版本已存在是否允许更新
           allowUpdates: true
+          replacesArtifact: true
           artifacts: "bin/juejin_collections-linux64.zip"
           tag: "v0.0.1-alpha"
           body: "test release v0.0.1-alpha"
 
-  
+
+
   # release:
   #   needs: [build]
   #   runs-on: ubuntu-latest
