@@ -13,7 +13,6 @@ jobs:
         include:
           - os: ubuntu-latest
             make_cmd: make linux
-            build_shell: bash
             asset_name: juejin_collections-linux64
           - os: windows-latest
             make_cmd: make win
@@ -74,19 +73,36 @@ jobs:
           path-type: inherit
       
       - name: Install Module
+        if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
           go mod download
           go install github.com/rakyll/statik
           cd ./frontend
           yarn install --frozen-lockfile --immutable
-        shell: "${{ matrix.build_shell }}"
       
       - name: Start build
+        if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
           make -v
           pwd
           ${{ matrix.make_cmd }}
-        shell: "${{ matrix.build_shell }}"
+      
+      # shell no abled setting 
+      # https://github.com/actions/runner/issues/444
+      - name: Install Module
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          go mod download
+          go install github.com/rakyll/statik
+          cd ./frontend
+          yarn install --frozen-lockfile --immutable
+      
+      - name: Start build
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          make -v
+          pwd
+          ${{ matrix.make_cmd }}
 
       # - name: Generate Compressed File
       #   run: |
