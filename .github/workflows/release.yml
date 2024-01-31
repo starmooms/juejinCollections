@@ -10,8 +10,9 @@ jobs:
   build:
     strategy:
       matrix:
-        - os: ubuntu-latest
-          asset_name: juejin_collections-linux64
+        include:
+          - os: ubuntu-latest
+            asset_name: juejin_collections-linux64
 
     runs-on: ${{ matrix.os }}
 
