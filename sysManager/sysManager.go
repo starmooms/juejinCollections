@@ -9,6 +9,8 @@ import (
 	"juejinCollections/server"
 )
 
+// https://github.com/sindresorhus/create-dmg
+
 var srv *server.Server
 
 func createServer() *server.Server {

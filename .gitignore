@@ -2,6 +2,7 @@
 /frontend/dist
 /frontend/*-error.log
 
+.DS_Store
 /vendor
 *.db
 *.db-shm
@@ -13,6 +14,7 @@ __debug_*
 !*/.exe
 /bin
 
+sysManager/macFixtures/
 statikFs/temp/
 statikFs/statik/
 statikFs/.static/
