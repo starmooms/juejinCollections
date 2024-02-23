@@ -1,19 +1,43 @@
-import { defineComponent, App, h, render, ref, createApp } from 'vue'
-console.log('33')
+import { defineComponent, Transition, App, h, render, ref, createApp, nextTick, onMounted, onUnmounted } from 'vue'
 
 export const MessageComponents = defineComponent({
   props: {
     msg: {
       type: String,
       required: true
+    },
+    time: {
+      type: Number,
+      required: true,
     }
   },
-  setup(props) {
+  setup(props, ctx) {
+
+    const show = ref(false)
+
+    nextTick().then(() => {
+      show.value = true
+    })
+
+    const timer = setTimeout(() => {
+      show.value = false
+    }, props.time)
+
+    onUnmounted(() => {
+      clearTimeout(timer)
+    })
+
+    const onClose = () => {
+      ctx.emit("close")
+    }
+
     return () => {
       return (
-        <div>
-          <p>{props.msg}</p>
-        </div>
+        <Transition name="fade" onAfterLeave={onClose}>
+          <div class="x-message" v-show={show.value}>
+            <p>{props.msg}</p>
+          </div>
+        </Transition>
       )
     }
   },
@@ -60,27 +84,33 @@ function useMessageBox() {
 }
 
 const boxElState = useMessageBox()
+let lastItemClose: null | (() => void) = null
 
 function message(msg: string, _opts?: MessageOpts) {
+
   const opts = {
-    time: 2000,
+    time: 3000,
     ..._opts
   }
-
   const boxEl = boxElState.getBoxEl()
   const container = document.createElement('div')
+  container.classList.add("x-message-box")
 
-  const vm = createApp(MessageComponents, {
-    msg: msg
-  })
-  vm.mount(container)
-  boxEl.appendChild(container)
-
-  setTimeout(() => {
+  lastItemClose?.()
+  const onClose = () => {
     vm.unmount()
     boxEl.removeChild(container)
     boxElState.removeBoxEl()
-  }, opts.time)
+    lastItemClose = null
+  }
+  lastItemClose = onClose
+  const vm = createApp(MessageComponents, {
+    msg: msg,
+    time: opts.time,
+    onClose: onClose
+  })
+  vm.mount(container)
+  boxEl.appendChild(container)
 }
 
 

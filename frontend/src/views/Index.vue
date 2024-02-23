@@ -9,7 +9,7 @@
           </li>
         </ul>
       </div>
-      <div class="h-600px my-4">
+      <div class="h-600px my-4 overflow-auto">
         <div class="tab1" v-if="curTab === 1">
           <div class="mx-auto max-w-600px">
             <input v-model.trim="keyword" @input="handleSearchList" type="text"
@@ -32,9 +32,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import { searchArticleList } from "../utils/api";
 import { useDebounce } from '../utils/util'
+import { createWebStocket } from "../utils/websocket";
 
 const log = ref('')
 
@@ -51,7 +52,6 @@ const selectTab = (tabItem: { id: number }) => {
   curTab.value = tabItem.id
 }
 
-
 const keyword = ref('')
 const articleList = ref([])
 
@@ -59,55 +59,16 @@ const handleSearchList = () => useDebounce(async () => {
   const data = await searchArticleList({
     keyword: keyword.value
   })
-
 }, 100)
 
-
-
-const createWebStocket = () => {
-  // https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent#status_codes
-  const CODE = {
-    CLOSE_NORMAL: 1000,
-    CLOSE_ABNORMAL: 1006
-
-  }
-  const baseUri = location.href.replace(/^http/, 'ws').replace(/\/$/, '')
-  const wsuri = `${baseUri}/echo`
-  var sock = new WebSocket(wsuri);
-
-  sock.addEventListener('open', () => {
-    console.log("connected to " + wsuri);
-  })
-
-  sock.addEventListener('close', (e) => {
-    console.log("connection closed (" + e.code + ")");
-  })
-
-  sock.addEventListener('message', (e) => {
-    const data = JSON.parse(e.data)
-    if (data.type === 'log') {
+const wsState = createWebStocket({
+  url: "/echo",
+  onMessage(data) {
+    if (data.type === "log") {
       log.value += `${data.data}\n`
-    } else if (data.type === 'tip') {
-      alert(data.data)
     }
-  })
-
-  const send = (data: Record<any, any>) => {
-    sock.send(JSON.stringify(data))
   }
-
-  const close = () => {
-    sock.close(CODE.CLOSE_NORMAL)
-  }
-
-  return {
-    sock,
-    send,
-    close
-  }
-}
-
-const wsState = createWebStocket()
+});
 
 const syncColletion = async () => {
   wsState.send({

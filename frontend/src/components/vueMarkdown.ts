@@ -5,14 +5,14 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.min"
 
 const oldRender = vueMarkdown.render
 vueMarkdown.render = function () {
-  let restul: VNode
-  oldRender.call(this, (...args) => {
-    restul = h(args[0], {
+  let result = null as unknown as VNode
+  oldRender.call(this, (...args: any) => {
+    result = h(args[0], {
       innerHTML: args[1].domProps.innerHTML
     })
   })
   nextTick(() => {
-    let el = restul.el as HTMLDivElement
+    let el = result.el as HTMLDivElement
     if (el) {
       el.classList.add('line-numbers')
       el.querySelectorAll('pre code').forEach(el => {
@@ -23,7 +23,7 @@ vueMarkdown.render = function () {
       Prism.highlightAllUnder(el)
     }
   })
-  return restul
+  return result
 }
 
 vueMarkdown.beforeMount = function () {
@@ -39,7 +39,7 @@ vueMarkdown.beforeMount = function () {
     this.$forceUpdate()
   })
 
-  this.watches.forEach((v) => {
+  this.watches.forEach((v: any) => {
     this.$watch(v, () => {
       this.$forceUpdate()
     })

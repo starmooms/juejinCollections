@@ -13,19 +13,21 @@ import (
 )
 
 type Action struct {
-	wg              *tool.WaitGroup
-	UserId          string
-	DbArticleId     []string
-	requestCount    int
-	newArticleCount int
+	wg                *tool.WaitGroup
+	UserId            string
+	DbArticleId       []string
+	requestCount      int
+	totalArticleCount int
+	newArticleCount   int
 }
 
 func NewAction(userId string) *Action {
 	return &Action{
-		UserId:          userId,
-		wg:              tool.NewWaitGroup(10),
-		requestCount:    0,
-		newArticleCount: 0,
+		UserId:            userId,
+		wg:                tool.NewWaitGroup(10),
+		requestCount:      0,
+		totalArticleCount: 0,
+		newArticleCount:   0,
 	}
 }
 
@@ -70,6 +72,7 @@ func (ac *Action) Run() {
 		"end": "%s",
 		"run": "%v",
 		"requestCount": "%d",
+		"totalArticleCount": "%d",
 		"newArticleCount": "%d",
 		"taskTotal": %d
 	}`,
@@ -77,6 +80,7 @@ func (ac *Action) Run() {
 		eTime,
 		latencyTime,
 		ac.requestCount,
+		ac.totalArticleCount,
 		ac.newArticleCount,
 		ac.wg.TaskRunLen,
 	)
@@ -99,9 +103,10 @@ func (ac *Action) addRequestCount(count int) {
 }
 
 // 更新新增文章数量
-func (ac *Action) addNewArticleCount(count int) {
+func (ac *Action) addNewArticleCount(addCount int, newCount int) {
 	ac.wg.GetLock(func() {
-		ac.newArticleCount += count
+		ac.totalArticleCount += addCount
+		ac.newArticleCount += newCount
 	})
 }
 
@@ -192,7 +197,7 @@ func (ac *Action) saveCollectData(tagId string) {
 				return
 			}
 
-			ac.addNewArticleCount(len(newArticleList))
+			ac.addNewArticleCount(len(*allArticleList), len(newArticleList))
 
 			collectData = newData
 			cursor += len(*allArticleList)

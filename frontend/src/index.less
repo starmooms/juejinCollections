@@ -41,6 +41,45 @@ li {
   list-style: none;
 }
 
-#app {
+.fade-enter-active,
+.fade-leave-active {
+  transition: transform .2s, opacity .2s;
+}
 
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.x-message-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9998;
+  // transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
+  
+  .x-message {
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  p {
+    box-sizing: border-box;
+    min-width: 100px;
+    max-width: 360px;
+    padding: 12px 26px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 24px;
+    color: #fff;
+    text-align: center;
+    word-break: break-all;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+#app {
+ 
 }

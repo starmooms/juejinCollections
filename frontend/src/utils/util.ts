@@ -18,9 +18,35 @@ export function useDebounce<T extends (...args: any[]) => any>(fn: T, wait: numb
   tryOnUnmounted(clear)
 
   return (...args: Parameters<T>) => {
-    clearInterval()
+    clear()
     timer = setTimeout(() => {
       fn(...args)
     }, wait)
+  }
+}
+
+export function getPromiseState<T = any>() {
+  let resolveFn: (value: T | PromiseLike<T>) => void = null as any
+  let rejectFn: (reason?: any) => void = null as any
+  let isPending = true
+
+  let wrapPending = <F extends Function>(fn: F): F => {
+    return function (...params: any) {
+      if (!isPending) {
+        return
+      }
+      fn(...params)
+      isPending = false
+    } as any
+  }
+  const promiseState = new Promise<T>((resolve, reject) => {
+    resolveFn = wrapPending(resolve)
+    rejectFn = wrapPending(reject)
+  })
+
+  return {
+    resolveFn,
+    rejectFn,
+    promiseState,
   }
 }
