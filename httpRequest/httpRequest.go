@@ -3,7 +3,7 @@ package httpRequest
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"juejinCollections/config"
 	"juejinCollections/logger"
 	"juejinCollections/tool"
@@ -68,7 +68,7 @@ func (h *HttpRequest) setJSONBody() error {
 		if err != nil {
 			return errors.Wrap(err, "setJSONBody Marshal Params Error")
 		}
-		h.Req.Body = ioutil.NopCloser(bytes.NewReader(byts))
+		h.Req.Body = io.NopCloser(bytes.NewReader(byts))
 		h.Req.ContentLength = int64(len(byts))
 		h.SetHeader("Content-Type", "application/json")
 	}
@@ -160,7 +160,7 @@ func (h *HttpRequest) Do() (*ResData, error) {
 	// 	return nil, nil
 	// }
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "HttpRequest Read Body Error")
 	}
@@ -172,7 +172,7 @@ func (h *HttpRequest) PrintReq(isErr bool) {
 	var err error
 	reqBody := "null"
 	if h.Req.Body != nil {
-		reqBodyByt, err := ioutil.ReadAll(h.Req.Body)
+		reqBodyByt, err := io.ReadAll(h.Req.Body)
 		if err != nil {
 			tool.BackError(errors.Wrap(err, "PrintReq Read Body Err"))
 		}

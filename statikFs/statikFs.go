@@ -1,7 +1,8 @@
 package statikFs
 
 import (
-	"io/ioutil"
+	"io"
+	"os"
 	"juejinCollections/config"
 	"juejinCollections/tool"
 	"net/http"
@@ -39,14 +40,14 @@ func GetFileSystem() http.FileSystem {
 
 func GetFileData(file string) ([]byte, error) {
 	if config.Config.IsDevelopment {
-		return ioutil.ReadFile(file)
+		return os.ReadFile(file)
 	}
 
 	r, err := statikFS.Open(GetStatikPath(file))
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadAll(r)
+	return io.ReadAll(r)
 }
 
 func GetFileDataMust(file string) []byte {
